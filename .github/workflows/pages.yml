@@ -1,39 +1,23 @@
-name: Deploy GitHub Pages
+name: Deploy GitHub Pageson:push:branches:- mainjobs:deploy:environment:name: github-pagesurl: ${{ steps.deployment.outputs.page_url }}runs-on: ubuntu-latestpermissions:contents: readpages: writeid-token: writesteps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
-on:
-  push:
-    branches:
-      - main
+  - name: Prepare site directory
+    run: |
+      mkdir public
+      # Copy non-dot files (like index.html) and explicitly copy .nojekyll
+      # This avoids trying to copy the public directory into itself.
+      cp -R * public/ || true
+      cp .nojekyll public/ || true 
+      
+  - name: Configure Pages
+    uses: actions/configure-pages@v4
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+  - name: Upload artifact
+    uses: actions/upload-pages-artifact@v3
+    with:
+      path: public
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-    
-      - name: Prepare site directory
-        run: |
-          mkdir public
-          # Copy non-dot files (like index.html) and explicitly copy .nojekyll
-          # This avoids trying to copy the public directory into itself.
-          cp -R * public/ || true
-          cp .nojekyll public/ || true 
-          
-      - name: Configure Pages
-        uses: actions/configure-pages@v4
-    
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-    
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
+  - name: Deploy to GitHub Pages
+    id: deployment
+    uses: actions/deploy-pages@v4
