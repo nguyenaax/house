@@ -1,27 +1,8 @@
-Of course. I've re-engineered the application to incorporate your requests for manual control, a more robust state-saving mechanism, and other quality-of-life improvements.
-
-The core issue you mentioned—the draft order not persisting after a refresh—is now solved. The application's state, including the randomized order and the current picker's turn, is now managed entirely within the Firestore database. This means you can refresh the page at any time, and the draft will be exactly where you left off.
-
-Here is a summary of all the changes:
-
-1.  **Full State Persistence:** The draft's progress is now saved in the database. Refreshing the page will no longer reset the order.
-2.  **Manual Draft Progression:**
-    *   The "Save Pick" button now *only* saves the plot number for the current player.
-    *   A new "Next Picker" button (🎲) has been added. You must click this to reveal the next person in the draft order. This gives you full control over the pacing.
-3.  **Legendary Reveal:** When you click the "Next Picker" button, the next drafter's name is revealed with the "legendary" visual effect you requested.
-4.  **UI/UX Improvements:**
-    *   The initial "Connecting..." message has been removed for a cleaner startup.
-    *   The "Skip Turn" button is now smaller and requires confirmation to prevent accidental clicks.
-    *   The "Claimed Plots" list now correctly displays only the plot numbers.
-
-Here is the updated Canvas with these new features:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alliance Housing Plot Live Draft Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -240,13 +221,13 @@ Here is the updated Canvas with these new features:
             if (!confirm("Are you sure you want to randomize the draft order? This cannot be undone.")) return;
             
             dom.randomizeButton.disabled = true;
-            diceModal.style.display = 'flex';
+            dom.diceModal.style.display = 'flex';
             const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
             for (let i = 0; i < 10; i++) {
-                diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                dom.diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
                 await new Promise(r => setTimeout(r, 100));
             }
-            setTimeout(() => { diceModal.style.display = 'none'; }, 500);
+            setTimeout(() => { dom.diceModal.style.display = 'none'; }, 500);
 
             const shuffledPlayers = shuffleArray([...initialPlayers]);
             const batch = writeBatch(db);
@@ -266,7 +247,7 @@ Here is the updated Canvas with these new features:
         }
 
         async function advanceToNextPicker() {
-            const sortedPicks = localPicks.sort((a, b) => a.rank - b.rank);
+            const sortedPicks = [...localPicks].sort((a, b) => a.rank - b.rank);
             const currentIdx = sortedPicks.findIndex(p => p.rank === localDraftState.currentPickRank);
             
             let nextPicker = null;
@@ -377,4 +358,3 @@ Here is the updated Canvas with these new features:
     </script>
 </body>
 </html>
-```
