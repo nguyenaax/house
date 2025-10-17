@@ -10,7 +10,11 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-image: url('https://raw.githubusercontent.com/nguyenaax/house/main/housebg.png');
-            background-size: cover; background-position: center center; background-attachment: fixed; background-color: #1a1c23;
+            background-size: cover; 
+            background-position: center center; 
+            background-attachment: fixed; 
+            background-repeat: no-repeat;
+            background-color: #1a1c23; /* Fallback color */
         }
         .alliance-font { font-family: 'Cinzel', serif; }
         .alliance-panel {
@@ -90,7 +94,7 @@
                                 </div>
                                 <div class="flex items-center space-x-4">
                                     <button type="submit" class="w-1/2 py-2 px-4 rounded-md shadow-sm font-medium text-white wow-button">Save Pick</button>
-                                    <button type="button" id="nextPickerButton" class="w-1/2 py-2 text-4xl flex justify-center items-center rounded-md shadow-sm font-medium text-white wow-button">🎲</button>
+                                    <button type="button" id="nextPickerButton" class="w-1/2 py-2 px-4 rounded-md shadow-sm font-medium text-white wow-button">NEXT</button>
                                 </div>
                                 <button type="button" id="skipButton" class="w-full py-2 px-4 rounded-md shadow-sm text-xs font-medium text-gray-300 bg-gray-600 hover:bg-gray-700">Skip Current Player</button>
                             </form>
@@ -116,7 +120,7 @@
             </div>
         </div>
 
-        <footer class="mt-12 text-center text-gray-500 text-sm">Draft Board v2.7 by Guild Master.</footer>
+        <footer class="mt-12 text-center text-gray-500 text-sm">Draft Board v2.8 by Guild Master.</footer>
     </div>
 
     <div id="diceModal"><div id="dice">⚀</div></div>
@@ -324,7 +328,6 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 
-                // Listener for draft state
                 onSnapshot(doc(db, STATE_COLLECTION, 'draftState'), (docSnap) => {
                     if (docSnap.exists()) {
                         localDraftState = docSnap.data();
@@ -333,12 +336,11 @@
                             dom.liveDraftPanel.classList.remove('hidden');
                         }
                     } else {
-                        initializeDraft(); // First time setup
+                        initializeDraft();
                     }
                     renderUI();
                 });
 
-                // Listener for picks data
                 onSnapshot(collection(db, PICKS_COLLECTION), (snapshot) => {
                     localPicks = snapshot.docs.map(doc => doc.data());
                     if (localPicks.length === 0 && initialPlayers.length > 0) {
