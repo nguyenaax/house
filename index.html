@@ -172,7 +172,7 @@
     <!-- Firebase Imports -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
         // --- GLOBAL FIREBASE CONFIG ---
@@ -414,8 +414,8 @@
                 setupFormSubmission();
             }).catch(error => {
                 console.error("Anonymous Sign-In Failed:", error);
-                // If sign-in fails, display a critical error
-                displayMessage("🚨 Critical Auth Error: Could not sign in. Check Anonymous Auth is enabled.", true);
+                // Fail silently in the UI if Auth is blocked, but log to console for debugging.
+                console.error("If the site is not working, check that Anonymous Auth is enabled in Firebase Console.");
                 loadingStatus.classList.add('hidden');
             });
         }
