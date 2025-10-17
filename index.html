@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Alliance Housing Plot Live Draft Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .table-header { background-color: rgba(55, 65, 81, 0.5); }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #60a5fa; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl sm:text-6xl font-extrabold text-blue-400">
+                Guild Housing Plot Draft
+            </h1>
+            <p class="text-gray-400 mt-2 text-xl">The Fair Way to Claim Alliance Prime Real Estate</p>
+        </header>
+
+        <!-- Main Content Area: Map (LARGE, Full Width) -->
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl ring-4 ring-blue-500/50 mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-blue-300 text-center">Available Plots Map (54 Total)</h2>
+            <!-- Image source updated and container size increased -->
+            <img 
+                src="https://pbs.twimg.com/media/G2qVYZsXIAABwE4.jpg:large" 
+                alt="Alliance Neighborhood House Plots Map with Numbers"
+                class="w-full h-auto rounded-lg shadow-lg border-2 border-gray-700"
+                onerror="this.onerror=null; this.src='https://placehold.co/1200x675/1f2937/9ca3af?text=Error+Loading+Map+Check+URL';"
+            >
+            <p class="text-xs text-gray-500 mt-3 text-center">Reference this map for plot numbers during the live draft.</p>
+        </div>
+        
+        <!-- Live Pick Order Results and Plan/Log (Side-by-Side below map) -->
+        <div class="grid lg:grid-cols-2 gap-10">
+
+            <!-- Live Pick Order Results -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl ring-4 ring-blue-500/50 h-full">
+                <h2 class="text-3xl font-bold mb-4 text-blue-300">LIVE Draft Pick Order & Results</h2>
+                <div class="overflow-x-auto rounded-lg">
+                    <table id="pickOrderTable" class="min-w-full divide-y divide-gray-700">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Rank (E)</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Winner Name (F)</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Chosen Plot (G)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <!-- Mock Data - Replace with actual results after the draw -->
+                            <tr class="hover:bg-gray-700 transition duration-150">
+                                <td class="px-4 py-3 whitespace-nowrap font-extrabold text-green-400">1st Pick</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg">Thordar</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 18</td>
+                            </tr>
+                            <tr class="hover:bg-gray-700 transition duration-150">
+                                <td class="px-4 py-3 whitespace-nowrap font-semibold">2nd Pick</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg">Grizelda</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 44</td>
+                            </tr>
+                            <tr class="hover:bg-gray-700 transition duration-150">
+                                <td class="px-4 py-3 whitespace-nowrap font-semibold">3rd Pick</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg">Balthazar</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 3</td>
+                            </tr>
+                            <tr class="hover:bg-gray-700 transition duration-150 bg-gray-700/50">
+                                <td class="px-4 py-3 whitespace-nowrap font-semibold text-gray-500">4th Pick</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-500">Anya</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-red-400">PENDING...</td>
+                            </tr>
+                            <tr class="hover:bg-gray-700 transition duration-150 bg-gray-700/50">
+                                <td class="px-4 py-3 whitespace-nowrap font-semibold text-gray-500">5th Pick</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-500">Drogon</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-red-400">PENDING...</td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Detailed Plan and Entry Log -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl ring-2 ring-gray-700 h-full">
+                <h2 class="text-3xl font-bold mb-4 text-blue-300 border-b border-gray-700 pb-2">Raffle Process and Entry Log</h2>
+
+                <!-- Housing_Raffle_Plan.md Content -->
+                <div class="space-y-6 text-gray-300">
+                    <h3 class="text-2xl font-bold text-gray-200"># Alliance Housing Plot Raffle & Draft Plan</h3>
+                    <p>This document outlines a fair, three-step process for managing the guild housing plot selection, from entry sign-up to the final draft.</p>
+
+                    <h4 class="text-xl font-semibold text-blue-400">### Raffle Entry Log Template</h4>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-700 border border-gray-700">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Column (A)</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Character Name (B)</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Entry Method (C)</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Tickets/Multiplier (D)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <!-- Mock Entry Log Data -->
+                                <tr class="bg-gray-900/50">
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">1</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">Thordar</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">500g Donation</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">1 (Standard)</td>
+                                </tr>
+                                <tr class="bg-gray-900/50">
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">2</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">Grizelda</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">Event Winner</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">1 (Standard)</td>
+                                </tr>
+                                <tr class="bg-gray-900/50">
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">3</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">Balthazar</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">500g Donation</td>
+                                    <td class="px-4 py-2 whitespace-nowrap text-sm">1 (Standard)</td>
+                                </tr>
+                                <!-- ... more entries follow ... -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-200">## Step 2: The Raffle (Generating the Pick Order)</h3>
+                    
+                    <h4 class="text-xl font-semibold text-blue-400">### Recommended Method: Random Number Generator (RNG)</h4>
+                    <ol class="list-decimal list-inside ml-4 space-y-1">
+                        <li>**List Participants for RNG:** Take the final list of names from the **Raffle Entry Log** (Column B, <code>Character Name</code>).</li>
+                        <li>**Generate Random Order:** Use a reliable and public online random list generator (e.g., Google's "random list generator" or a dedicated website like random.org).</li>
+                        <li>**Run the Draw LIVE:** Share your screen on Discord or a voice chat channel and run the list generator. This visual confirmation is crucial.</li>
+                        <li>**The Result:** The resulting randomized list dictates the pick order. The name at **Position 1** gets the first choice, **Position 2** gets the second choice, and so on.</li>
+                    </ol>
+
+                    <h3 class="text-2xl font-bold text-gray-200">## Step 3: The Draft (Plot Selection)</h3>
+                    <ol class="list-decimal list-inside ml-4 space-y-1">
+                        <li>**Announce the Rank:** Announce the winner with the 1st Pick Order Rank.</li>
+                        <li>**The Selection:** The player announces their choice (e.g., "I choose Plot 18").</li>
+                        <li>**Immediate Update:** The organizer immediately enters the chosen plot into the **Chosen Plot (Result)** column (in the table above) and marks the plot as "TAKEN" on the main reference map.</li>
+                        <li>**Repeat:** Proceed to the 2nd Rank, 3rd Rank, and so on, until all available plots are claimed or all winners have chosen.</li>
+                    </ol>
+                    <p class="mt-4 p-3 bg-blue-900/30 border-l-4 border-blue-500 rounded-md italic">
+                        **Pro-Tip:** Ask players with the top 5 picks to provide a shortlist of 2-3 plots they like beforehand. This keeps the draft moving quickly if their first choice is taken.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            Draft Board generated by Guild Master (or your friendly AI Assistant).
+        </footer>
+
+    </div>
+</body>
+</html>
