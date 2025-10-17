@@ -1,3 +1,6 @@
+Of course. I will edit the Canvas to give it a more immersive "World of Warcraft" theme, focusing on an Alliance-style aesthetic with stone textures, golden accents, and thematic fonts. Here is the updated Canvas:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +14,9 @@
         /* Base Styling */
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0d1323; /* Very dark blue/black for depth */
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="%231a202c" opacity="0.1"/><g fill="%234f46e5" opacity="0.1"><circle cx="25" cy="25" r="3"/><circle cx="75" cy="75" r="3"/><circle cx="75" cy="25" r="3"/><circle cx="25" cy="75" r="3"/></g></svg>');
+            background-color: #1a1c23; /* Dark stone color */
+            /* Subtle stone texture using SVG */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23000" fill-opacity="0.1"><rect x="50" width="50" height="50"/><rect y="50" width="50" height="50"/></g></svg>');
         }
         
         /* Alliance Header Font */
@@ -20,19 +24,49 @@
             font-family: 'Cinzel', serif;
         }
 
-        /* Thematic Shadow/Border for Content Boxes */
+        /* Thematic Shadow/Border for Content Boxes - WoW UI Style */
         .alliance-panel {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(79, 70, 229, 0.2);
-            border: 3px solid #60a5fa; /* Alliance Blue */
+            background-color: rgba(15, 23, 42, 0.8); /* Dark Slate, semi-transparent */
+            backdrop-filter: blur(4px);
+            border: 2px solid;
+            border-image-source: linear-gradient(to top, #ffd700, #b8860b);
+            border-image-slice: 1;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(0,0,0,0.5); /* Golden Glow and Inner Shadow */
         }
         
         /* Table Aesthetics */
-        .table-header { background-color: #1f2937; } /* Dark slate gray */
+        .table-header { 
+            background-color: #111827; /* Very Dark Blue, almost black */
+            border-bottom: 2px solid #ffd700; /* Golden separator */
+        }
+        tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: rgba(30, 41, 59, 0.4);
+        }
+        tbody tr:hover {
+            background-color: rgba(255, 215, 0, 0.1); /* Subtle gold on hover */
+        }
 
         /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 4px; } /* Purple/Gold accent */
+        ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 4px; border: 1px solid #1e293b; } /* Gold accent */
+        
+        /* WoW-style Button */
+        .wow-button {
+            background: linear-gradient(180deg, #1e90ff 0%, #0056b3 100%); /* Alliance Blue Gradient */
+            border: 1px solid #c4a867; /* Gold border */
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 2px 2px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease-in-out;
+        }
+        .wow-button:hover {
+            background: linear-gradient(180deg, #4caaff 0%, #1e90ff 100%);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5);
+            transform: translateY(-1px);
+        }
+
     </style>
 </head>
 <body class="text-gray-100 min-h-screen p-4 sm:p-8">
@@ -40,7 +74,7 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="text-center mb-12">
-            <h1 class="text-5xl sm:text-6xl font-extrabold text-yellow-400 alliance-font">
+            <h1 class="text-5xl sm:text-6xl font-extrabold text-yellow-400 alliance-font" style="text-shadow: 2px 2px 4px #000;">
                 Grand Alliance Draft Board
             </h1>
             <p class="text-blue-300 mt-2 text-xl alliance-font">By Right of Conquest: Claim Your Lordship's Plot</p>
@@ -53,7 +87,7 @@
             <img 
                 src="https://pbs.twimg.com/media/G2qVYZsXIAABwE4.jpg:large" 
                 alt="Alliance Neighborhood House Plots Map with Numbers"
-                class="w-full h-auto rounded-lg shadow-lg border-4 border-yellow-600"
+                class="w-full h-auto rounded-lg shadow-lg border-2 border-yellow-600"
                 onerror="this.onerror=null; this.src='https://placehold.co/1200x675/1f2937/9ca3af?text=Error+Loading+Map+Check+URL';"
             >
             <p class="text-xs text-gray-400 mt-3 text-center">Reference this map for plot numbers during the live draft.</p>
@@ -109,7 +143,7 @@
                             <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (1-54)</label>
                             <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter 'Plot X' or 'PENDING...'">
                         </div>
-                        <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                        <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">
                             Save Pick Result
                         </button>
                     </form>
@@ -118,7 +152,7 @@
 
             <!-- Detailed Plan and Entry Log -->
             <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
-                <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font border-b border-gray-700 pb-2">Draft Process and Winner List</h2>
+                <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font border-b-2 border-yellow-600/50 pb-2">Draft Process and Winner List</h2>
 
                 <!-- Updated Content -->
                 <div class="space-y-6 text-gray-300">
@@ -137,7 +171,7 @@
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Player Name</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-700">
+                            <tbody class="divide-y divide-gray-700 bg-slate-800/50">
                                 <!-- This list must be updated manually once the random draw is complete -->
                                 <tr><td class="px-4 py-2 whitespace-nowrap text-sm">1</td><td class="px-4 py-2 whitespace-nowrap text-sm">Duckiimist</td></tr>
                                 <tr><td class="px-4 py-2 whitespace-nowrap text-sm">2</td><td class="px-4 py-2 whitespace-nowrap text-sm">Kirikomain</td></tr>
@@ -282,7 +316,7 @@
                 }
 
                 const row = document.createElement('tr');
-                row.className = `hover:bg-gray-700 transition duration-150 ${statusClass === 'text-gray-500' ? 'bg-gray-700/50' : ''}`;
+                row.className = `transition duration-150 ${statusClass === 'text-gray-500' ? '' : ''}`;
                 row.innerHTML = `
                     <td class="px-4 py-3 whitespace-nowrap font-semibold ${pick.rank <= 3 ? 'font-extrabold' : ''} ${statusClass}">${rankText}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-lg">${pick.winnerName}</td>
@@ -423,15 +457,4 @@
     </script>
 </body>
 </html>
-" and am asking a query about/based on this code below.
-Instructions to follow:
-  * Don't output/edit the document if the query is Direct/Simple. For example, if the query asks for a simple explanation, output a direct answer.
-  * Make sure to **edit** the document if the query shows the intent of editing the document, in which case output the entire edited document, **not just that section or the edits**.
-    * Don't output the same document/empty document and say that you have edited it.
-    * Don't change unrelated code in the document.
-  * Don't output  and  in your final response.
-  * Any references like "this" or "selected code" refers to the code between  and  tags.
-  * Just acknowledge my request in the introduction.
-  * Make sure to refer to the document as "Canvas" in your response.
-
-Can we make page look more world of warcraft themed 
+```
