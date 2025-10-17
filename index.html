@@ -1,97 +1,89 @@
+Of course. I've re-engineered the application to incorporate your requests for manual control, a more robust state-saving mechanism, and other quality-of-life improvements.
+
+The core issue you mentioned—the draft order not persisting after a refresh—is now solved. The application's state, including the randomized order and the current picker's turn, is now managed entirely within the Firestore database. This means you can refresh the page at any time, and the draft will be exactly where you left off.
+
+Here is a summary of all the changes:
+
+1.  **Full State Persistence:** The draft's progress is now saved in the database. Refreshing the page will no longer reset the order.
+2.  **Manual Draft Progression:**
+    *   The "Save Pick" button now *only* saves the plot number for the current player.
+    *   A new "Next Picker" button (🎲) has been added. You must click this to reveal the next person in the draft order. This gives you full control over the pacing.
+3.  **Legendary Reveal:** When you click the "Next Picker" button, the next drafter's name is revealed with the "legendary" visual effect you requested.
+4.  **UI/UX Improvements:**
+    *   The initial "Connecting..." message has been removed for a cleaner startup.
+    *   The "Skip Turn" button is now smaller and requires confirmation to prevent accidental clicks.
+    *   The "Claimed Plots" list now correctly displays only the plot numbers.
+
+Here is the updated Canvas with these new features:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Alliance Housing Plot Live Draft Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Importing a Fantasy-style font -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Base Styling */
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #1a1c23; /* Dark stone color */
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23000" fill-opacity="0.1"><rect x="50" width="50" height="50"/><rect y="50" width="50" height="50"/></g></svg>');
+            background-image: url('https://raw.githubusercontent.com/nguyenaax/house/main/housebg.png');
+            background-size: cover; background-position: center center; background-attachment: fixed; background-color: #1a1c23;
         }
-        
         .alliance-font { font-family: 'Cinzel', serif; }
-
         .alliance-panel {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
-            border: 2px solid;
-            border-image-source: linear-gradient(to top, #ffd700, #b8860b);
-            border-image-slice: 1;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(0,0,0,0.5);
+            background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+            border: 2px solid; border-image-source: linear-gradient(to top, #ffd700, #b8860b);
+            border-image-slice: 1; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(0,0,0,0.5);
         }
-        
-        .table-header { 
-            background-color: #111827;
-            border-bottom: 2px solid #ffd700;
-        }
+        .table-header { background-color: #111827; border-bottom: 2px solid #ffd700; }
         tbody tr:nth-child(odd) { background-color: rgba(30, 41, 59, 0.4); }
         tbody tr:hover { background-color: rgba(255, 215, 0, 0.1); }
-
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 4px; border: 1px solid #1e293b; }
-        
         .wow-button {
-            background: linear-gradient(180deg, #1e90ff 0%, #0056b3 100%);
-            border: 1px solid #c4a867;
+            background: linear-gradient(180deg, #1e90ff 0%, #0056b3 100%); border: 1px solid #c4a867;
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 2px 2px rgba(0, 0, 0, 0.4);
             transition: all 0.2s ease-in-out;
         }
         .wow-button:hover {
             background: linear-gradient(180deg, #4caaff 0%, #1e90ff 100%);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5);
-            transform: translateY(-1px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5); transform: translateY(-1px);
         }
-        .wow-button:disabled {
-            background: #555; border-color: #444; cursor: not-allowed; transform: none;
-        }
-        
+        .wow-button:disabled { background: #555; border-color: #444; cursor: not-allowed; transform: none; }
         #diceModal {
             display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.75);
             align-items: center; justify-content: center; z-index: 50; cursor: pointer;
         }
-        #dice {
-            font-size: 10rem; color: white; text-shadow: 0 0 20px #ffd700;
-            animation: roll 1s ease-in-out;
-        }
-        @keyframes roll {
-            0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
-            50% { transform: rotate(180deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        #dice { font-size: 10rem; color: white; text-shadow: 0 0 20px #ffd700; animation: roll 1s ease-in-out; }
+        @keyframes roll { 0% { transform: rotate(0deg) scale(0.5); opacity: 0; } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); opacity: 1; } }
+        .legendary-reveal { animation: legendary-glow 1.5s ease-out; }
+        @keyframes legendary-glow {
+            0% { opacity: 0; transform: scale(0.8); text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff; }
+            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 35px #ffd700, 0 0 50px #b8860b; }
+            100% { opacity: 1; transform: scale(1); text-shadow: none; }
         }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen p-4 sm:p-8">
     <div class="max-w-screen-2xl mx-auto">
         <header class="text-center mb-12">
-            <h1 class="text-5xl sm:text-6xl font-extrabold text-yellow-400 alliance-font" style="text-shadow: 2px 2px 4px #000;">
-                Grand Alliance Draft Board
-            </h1>
+            <h1 class="text-5xl sm:text-6xl font-extrabold text-yellow-400 alliance-font" style="text-shadow: 2px 2px 4px #000;">Grand Alliance Draft Board</h1>
             <p class="text-blue-300 mt-2 text-xl alliance-font">By Right of Conquest: Claim Your Lordship's Plot</p>
         </header>
 
         <div class="grid lg:grid-cols-5 gap-10">
-            <!-- Left Column: Map (Wider) -->
             <div class="lg:col-span-3 alliance-panel p-6 rounded-xl">
-                <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center alliance-font">Available Plots Map (54 Total)</h2>
-                <img 
-                    src="https://raw.githubusercontent.com/nguyenaax/house/main/TP%20house%20logo.png"
-                    alt="Alliance Neighborhood House Plots Map with Numbers"
-                    class="w-full h-auto rounded-lg shadow-lg border-2 border-yellow-600"
-                >
-                <div id="claimedPlotsList" class="mt-6 p-4 bg-gray-900 rounded-lg hidden border-2 border-yellow-700">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center alliance-font">Available Plots Map</h2>
+                <img src="https://raw.githubusercontent.com/nguyenaax/house/main/TP%20house%20logo.png" alt="Alliance Neighborhood House Plots Map" class="w-full h-auto rounded-lg shadow-lg border-2 border-yellow-600">
+                <div id="claimedPlotsList" class="mt-6 p-4 bg-gray-900/70 rounded-lg hidden border-2 border-yellow-700">
                     <h3 class="text-xl font-semibold text-yellow-400 mb-3 alliance-font">Claimed Plots:</h3>
                     <div id="claimedPlotsContent" class="flex flex-wrap gap-2 text-lg font-mono text-white"></div>
                 </div>
             </div>
 
-            <!-- Right Column: Draft Controls & Log -->
             <div class="lg:col-span-2 space-y-10">
                 <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
                     <div id="draftControlPanel">
@@ -101,25 +93,25 @@
                     </div>
 
                     <div id="liveDraftPanel" class="hidden">
-                        <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font">Live Pick & Selection Log</h2>
-                        <div id="upNextPanel" class="text-center bg-gray-900/50 p-4 rounded-lg border-2 border-yellow-500 mb-6">
+                        <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font">Live Pick & Selection</h2>
+                        <div id="upNextPanel" class="text-center bg-gray-900/50 p-4 rounded-lg border-2 border-yellow-500 mb-6 min-h-[100px]">
                             <p id="nextPickerRank" class="text-lg text-gray-400 alliance-font">NOW PICKING</p>
-                            <p id="nextPickerName" class="text-3xl font-bold text-white">...</p>
+                            <p id="nextPickerName" class="text-4xl font-bold text-white">...</p>
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-gray-700">
-                            <h3 class="text-2xl font-bold mb-3 text-red-400 alliance-font">Organizer: Submit Pick</h3>
+                            <h3 class="text-2xl font-bold mb-3 text-red-400 alliance-font">Organizer Controls</h3>
                             <form id="pickForm" class="space-y-4">
-                                <div id="loadingStatus" class="hidden p-2 text-center text-lg font-semibold bg-yellow-600 text-gray-900 rounded-md">Connecting...</div>
                                 <div id="messageBox" class="hidden p-3 rounded-md text-sm font-medium"></div>
                                 <div>
-                                    <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (1-54)</label>
-                                    <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter Plot Number">
+                                    <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot Number (1-54)</label>
+                                    <input type="number" id="plotInput" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter Plot Number">
                                 </div>
-                                <div class="flex space-x-4">
-                                    <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">Save Pick</button>
-                                    <button type="button" id="skipButton" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-gray-900 bg-yellow-500 hover:bg-yellow-600">Skip Turn</button>
+                                <div class="flex items-center space-x-4">
+                                    <button type="submit" class="w-1/2 py-2 px-4 rounded-md shadow-sm font-medium text-white wow-button">Save Pick</button>
+                                    <button type="button" id="nextPickerButton" class="w-1/2 py-2 text-4xl flex justify-center items-center rounded-md shadow-sm font-medium text-white wow-button">🎲</button>
                                 </div>
+                                <button type="button" id="skipButton" class="w-full py-2 px-4 rounded-md shadow-sm text-xs font-medium text-gray-300 bg-gray-600 hover:bg-gray-700">Skip Current Player</button>
                             </form>
                         </div>
                     </div>
@@ -143,15 +135,10 @@
             </div>
         </div>
 
-        <footer class="mt-12 text-center text-gray-500 text-sm">
-            Draft Board v2.5 by Guild Master.
-        </footer>
+        <footer class="mt-12 text-center text-gray-500 text-sm">Draft Board v2.7 by Guild Master.</footer>
     </div>
 
-    <!-- Dice Roll Modal -->
-    <div id="diceModal">
-        <div id="dice">⚀</div>
-    </div>
+    <div id="diceModal"><div id="dice">⚀</div></div>
 
     <script type="module">
         const firebaseConfig = {
@@ -159,35 +146,41 @@
             storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID"
         };
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         
         const PENDING = "PENDING...";
         const SKIPPED = "SKIPPED";
         
-        const loadingStatus = document.getElementById('loadingStatus');
-        const messageBox = document.getElementById('messageBox');
-        const randomizeButton = document.getElementById('randomizeButton');
-        const diceModal = document.getElementById('diceModal');
-        const diceElement = document.getElementById('dice');
-        const nextPickerNameEl = document.getElementById('nextPickerName');
-        const nextPickerRankEl = document.getElementById('nextPickerRank');
-        const draftControlPanel = document.getElementById('draftControlPanel');
-        const liveDraftPanel = document.getElementById('liveDraftPanel');
+        const dom = {
+            messageBox: document.getElementById('messageBox'),
+            randomizeButton: document.getElementById('randomizeButton'),
+            diceModal: document.getElementById('diceModal'),
+            diceElement: document.getElementById('dice'),
+            nextPickerNameEl: document.getElementById('nextPickerName'),
+            nextPickerRankEl: document.getElementById('nextPickerRank'),
+            draftControlPanel: document.getElementById('draftControlPanel'),
+            liveDraftPanel: document.getElementById('liveDraftPanel'),
+            pickForm: document.getElementById('pickForm'),
+            skipButton: document.getElementById('skipButton'),
+            nextPickerButton: document.getElementById('nextPickerButton')
+        };
         
-        let db, currentPicksData = [];
-        let draftOrderDetermined = false;
+        let db;
+        let localPicks = [];
+        let localDraftState = { isRandomized: false, currentPickRank: 1 };
         const appId = firebaseConfig.appId;
-        const PICK_COLLECTION_PATH = `artifacts/${appId}/public/data/picks`;
+        const PICKS_COLLECTION = `picks_${appId}`;
+        const STATE_COLLECTION = `state_${appId}`;
         
         const initialPlayers = [
             "Duckiimist", "Kirikomain", "Oshallá", "Cultzivate", "Meowlygos", "Ryxw", "Xephostwo", "Kevxh", "Tushytantrum", "Lygerxd", "Yakarue", "Bizzm", "Azunazx", "Akuwu", "Preyxd", "Fightdk", "Maverris", "Evne", "Garms", "Arzy", "Dabnel", "Subti", "Hypeboy", "Cququ", "Nerftank", "Salisw"
         ];
 
         function displayMessage(message, isError = false) {
-            messageBox.innerHTML = message;
-            messageBox.className = `p-3 rounded-md text-sm font-medium ${isError ? 'bg-red-800 text-red-100' : 'bg-green-800 text-green-100'}`;
-            messageBox.classList.remove('hidden');
-            setTimeout(() => messageBox.classList.add('hidden'), 3000);
+            dom.messageBox.innerHTML = message;
+            dom.messageBox.className = `p-3 rounded-md text-sm font-medium ${isError ? 'bg-red-800 text-red-100' : 'bg-green-800 text-green-100'}`;
+            dom.messageBox.classList.remove('hidden');
+            setTimeout(() => dom.messageBox.classList.add('hidden'), 4000);
         }
 
         const shuffleArray = (array) => {
@@ -195,160 +188,188 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         };
         
-        function getCurrentPicker(picks) {
-            const sortedPicks = picks.sort((a, b) => a.rank - b.rank);
-            let picker = sortedPicks.find(p => p.chosenPlot === PENDING);
-            if (!picker) {
-                picker = sortedPicks.find(p => p.chosenPlot === SKIPPED);
-            }
-            return picker;
-        }
-
-        async function initializePicksIfEmpty() {
+        async function initializeDraft() {
             try {
-                const promises = initialPlayers.map((player, index) => {
+                const batch = writeBatch(db);
+                initialPlayers.forEach((player, index) => {
                     const rank = index + 1;
-                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
-                    return setDoc(pickDocRef, { rank, winnerName: player, chosenPlot: PENDING }, { merge: true });
+                    batch.set(doc(db, PICKS_COLLECTION, String(rank)), { rank, winnerName: player, chosenPlot: PENDING });
                 });
-                await Promise.all(promises);
-            } catch (error) { console.error("Error initializing picks:", error); }
+                batch.set(doc(db, STATE_COLLECTION, 'draftState'), { isRandomized: false, currentPickRank: 1 });
+                await batch.commit();
+            } catch (error) { console.error("Error initializing draft:", error); }
         }
 
-        function renderUI(picks) {
-            currentPicksData = picks;
+        function renderUI() {
             const pickOrderBody = document.getElementById('pickOrderBody');
             const claimedPlotsContent = document.getElementById('claimedPlotsContent');
             const claimedPlotsList = document.getElementById('claimedPlotsList');
             pickOrderBody.innerHTML = '';
             
-            const completedPicks = picks.filter(p => p.chosenPlot !== PENDING && p.chosenPlot !== SKIPPED).sort((a, b) => a.rank - b.rank);
+            const completedPicks = localPicks.filter(p => p.chosenPlot !== PENDING && p.chosenPlot !== SKIPPED).sort((a, b) => a.rank - b.rank);
             completedPicks.forEach(pick => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-4 py-3">${pick.rank}</td>
-                    <td class="px-4 py-3 text-lg">${pick.winnerName}</td>
-                    <td class="px-4 py-3 text-lg font-mono text-green-400">${pick.chosenPlot}</td>
-                `;
+                row.innerHTML = `<td class="px-4 py-3">${pick.rank}</td><td class="px-4 py-3 text-lg">${pick.winnerName}</td><td class="px-4 py-3 text-lg font-mono text-green-400">${pick.chosenPlot}</td>`;
                 pickOrderBody.appendChild(row);
             });
 
-            claimedPlotsContent.innerHTML = completedPicks.map(p => `<span class="bg-blue-700 p-1 rounded-md text-sm">${p.chosenPlot.replace(/plot\s*/i, 'P')}</span>`).join('');
+            claimedPlotsContent.innerHTML = completedPicks.map(p => `<span class="bg-gray-700 px-2 py-1 rounded-md text-sm">${p.chosenPlot.replace(/\D/g, '')}</span>`).join('');
             claimedPlotsList.classList.toggle('hidden', completedPicks.length === 0);
 
-            const nextPicker = getCurrentPicker(picks);
-            if (nextPicker && draftOrderDetermined) {
-                nextPickerRankEl.textContent = `RANK ${nextPicker.rank} IS NOW PICKING`;
-                nextPickerNameEl.textContent = nextPicker.winnerName;
-                if (nextPicker.chosenPlot === SKIPPED) {
-                    nextPickerRankEl.textContent += " (SKIPPED)";
+            const currentPicker = localPicks.find(p => p.rank === localDraftState.currentPickRank);
+            if (currentPicker && localDraftState.isRandomized) {
+                const status = currentPicker.chosenPlot === SKIPPED ? " (SKIPPED)" : (currentPicker.chosenPlot !== PENDING ? ` (CLAIMED ${currentPicker.chosenPlot})` : "");
+                dom.nextPickerRankEl.textContent = `RANK ${currentPicker.rank} PICKING${status}`;
+                if (dom.nextPickerNameEl.textContent !== currentPicker.winnerName) {
+                    dom.nextPickerNameEl.classList.remove('legendary-reveal');
+                    void dom.nextPickerNameEl.offsetWidth;
+                    dom.nextPickerNameEl.textContent = currentPicker.winnerName;
+                    dom.nextPickerNameEl.classList.add('legendary-reveal');
                 }
-            } else if (!nextPicker && draftOrderDetermined) {
-                nextPickerRankEl.textContent = "DRAFT COMPLETE";
-                nextPickerNameEl.textContent = "All plots have been claimed!";
-                document.getElementById('pickForm').style.display = 'none';
+            } else if (localDraftState.isRandomized && !localPicks.some(p => p.chosenPlot === PENDING || p.chosenPlot === SKIPPED)) {
+                dom.nextPickerRankEl.textContent = "DRAFT COMPLETE";
+                dom.nextPickerNameEl.textContent = "All plots claimed!";
+                dom.pickForm.style.display = 'none';
             }
         }
         
         async function handleRandomizeClick() {
             if (!confirm("Are you sure you want to randomize the draft order? This cannot be undone.")) return;
             
-            randomizeButton.disabled = true;
-            randomizeButton.textContent = "🎲";
-            
+            dom.randomizeButton.disabled = true;
             diceModal.style.display = 'flex';
             const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
             for (let i = 0; i < 10; i++) {
                 diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(r => setTimeout(r, 100));
             }
             setTimeout(() => { diceModal.style.display = 'none'; }, 500);
 
-            const shuffledPlayers = [...initialPlayers];
-            shuffleArray(shuffledPlayers);
-            const newPickOrder = shuffledPlayers.map((player, index) => ({
-                rank: index + 1, winnerName: player, chosenPlot: PENDING
-            }));
-
+            const shuffledPlayers = shuffleArray([...initialPlayers]);
+            const batch = writeBatch(db);
+            shuffledPlayers.forEach((player, index) => {
+                const rank = index + 1;
+                batch.set(doc(db, PICKS_COLLECTION, String(rank)), { rank, winnerName: player, chosenPlot: PENDING });
+            });
+            batch.set(doc(db, STATE_COLLECTION, 'draftState'), { isRandomized: true, currentPickRank: 1 });
+            
             try {
-                const promises = newPickOrder.map(pick => setDoc(doc(db, PICK_COLLECTION_PATH, String(pick.rank)), pick));
-                await Promise.all(promises);
-                draftOrderDetermined = true;
-                displayMessage("Draft order has been successfully randomized!", false);
-                draftControlPanel.classList.add('hidden');
-                liveDraftPanel.classList.remove('hidden');
+                await batch.commit();
+                displayMessage("Draft order randomized!", false);
             } catch (error) {
-                console.error("Error updating randomized order:", error);
-                displayMessage("Failed to save the new order. Please check console.", true);
-                randomizeButton.disabled = false;
+                displayMessage("Failed to save the new order.", true);
+                dom.randomizeButton.disabled = false;
+            }
+        }
+
+        async function advanceToNextPicker() {
+            const sortedPicks = localPicks.sort((a, b) => a.rank - b.rank);
+            const currentIdx = sortedPicks.findIndex(p => p.rank === localDraftState.currentPickRank);
+            
+            let nextPicker = null;
+            // First pass: look for PENDING picks after current
+            for (let i = currentIdx + 1; i < sortedPicks.length; i++) {
+                if (sortedPicks[i].chosenPlot === PENDING) { nextPicker = sortedPicks[i]; break; }
+            }
+            // Second pass: look for PENDING picks from start
+            if (!nextPicker) {
+                for (let i = 0; i < sortedPicks.length; i++) {
+                    if (sortedPicks[i].chosenPlot === PENDING) { nextPicker = sortedPicks[i]; break; }
+                }
+            }
+            // Third & Fourth pass: look for SKIPPED picks
+            if (!nextPicker) {
+                for (let i = currentIdx + 1; i < sortedPicks.length; i++) {
+                    if (sortedPicks[i].chosenPlot === SKIPPED) { nextPicker = sortedPicks[i]; break; }
+                }
+                if (!nextPicker) {
+                     for (let i = 0; i < sortedPicks.length; i++) {
+                        if (sortedPicks[i].chosenPlot === SKIPPED) { nextPicker = sortedPicks[i]; break; }
+                    }
+                }
+            }
+
+            if (nextPicker) {
+                await setDoc(doc(db, STATE_COLLECTION, 'draftState'), { currentPickRank: nextPicker.rank }, { merge: true });
+            } else {
+                displayMessage("The draft is complete!", false);
             }
         }
         
         function setupEventListeners() {
-            randomizeButton.addEventListener('click', handleRandomizeClick);
-            diceModal.addEventListener('click', () => { diceModal.style.display = 'none'; });
+            dom.randomizeButton.addEventListener('click', handleRandomizeClick);
+            dom.diceModal.addEventListener('click', () => { dom.diceModal.style.display = 'none'; });
+            dom.nextPickerButton.addEventListener('click', advanceToNextPicker);
 
-            document.getElementById('pickForm').addEventListener('submit', async (e) => {
+            dom.pickForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const currentPicker = getCurrentPicker(currentPicksData);
-                if (!currentPicker) return displayMessage("Draft is complete.", true);
+                const currentPicker = localPicks.find(p => p.rank === localDraftState.currentPickRank);
+                if (!currentPicker) return displayMessage("No active picker.", true);
                 
                 const plotInput = document.getElementById('plotInput');
                 const chosenPlot = plotInput.value.trim();
+                if (!chosenPlot) return displayMessage("Please enter a plot number.", true);
+                
                 const normalizedPlot = `Plot ${chosenPlot.replace(/\D/g, '')}`;
-
-                const isClaimed = currentPicksData.some(p => p.chosenPlot.toLowerCase() === normalizedPlot.toLowerCase());
-                if (isClaimed) return displayMessage(`🚫 Plot <b>${normalizedPlot}</b> is already claimed.`, true);
+                if (localPicks.some(p => p.chosenPlot.toLowerCase() === normalizedPlot.toLowerCase())) {
+                    return displayMessage(`🚫 Plot <b>${normalizedPlot.replace(/\D/g, '')}</b> is already claimed.`, true);
+                }
                 
                 try {
-                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(currentPicker.rank));
-                    await setDoc(pickDocRef, { chosenPlot: normalizedPlot }, { merge: true });
-                    displayMessage(`Successfully claimed ${normalizedPlot} for ${currentPicker.winnerName}!`, false);
-                    e.target.reset();
+                    await setDoc(doc(db, PICKS_COLLECTION, String(currentPicker.rank)), { chosenPlot: normalizedPlot }, { merge: true });
+                    displayMessage(`Saved ${normalizedPlot} for ${currentPicker.winnerName}.`, false);
+                    plotInput.value = '';
                 } catch (error) { displayMessage(`Failed to save pick: ${error.message}`, true); }
             });
 
-            document.getElementById('skipButton').addEventListener('click', async () => {
-                const currentPicker = getCurrentPicker(currentPicksData);
-                if (!currentPicker) return displayMessage("Draft is complete.", true);
+            dom.skipButton.addEventListener('click', async () => {
+                if (!confirm("Are you sure you want to skip this player's turn?")) return;
+                const currentPicker = localPicks.find(p => p.rank === localDraftState.currentPickRank);
+                if (!currentPicker) return displayMessage("No active picker.", true);
+                
                 try {
-                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(currentPicker.rank));
-                    await setDoc(pickDocRef, { chosenPlot: SKIPPED }, { merge: true });
-                    displayMessage(`${currentPicker.winnerName} has been skipped.`, false);
+                    await setDoc(doc(db, PICKS_COLLECTION, String(currentPicker.rank)), { chosenPlot: SKIPPED }, { merge: true });
+                    displayMessage(`${currentPicker.winnerName} was skipped.`, false);
+                    advanceToNextPicker();
                 } catch (error) { displayMessage(`Failed to skip: ${error.message}`, true); }
             });
         }
         
         function initApp() {
-            loadingStatus.textContent = "Connecting to Database...";
-            loadingStatus.classList.remove('hidden');
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 
-                onSnapshot(collection(db, PICK_COLLECTION_PATH), (snapshot) => {
-                    const picks = snapshot.docs.map(doc => doc.data());
-                    if (picks.length === 0) {
-                        initializePicksIfEmpty();
-                    } else {
-                        const isRandomized = picks.sort((a,b) => a.rank - b.rank).some((pick, index) => pick.winnerName !== initialPlayers[index]);
-                        if (isRandomized) {
-                            draftOrderDetermined = true;
-                            draftControlPanel.classList.add('hidden');
-                            liveDraftPanel.classList.remove('hidden');
+                // Listener for draft state
+                onSnapshot(doc(db, STATE_COLLECTION, 'draftState'), (docSnap) => {
+                    if (docSnap.exists()) {
+                        localDraftState = docSnap.data();
+                        if (localDraftState.isRandomized) {
+                            dom.draftControlPanel.classList.add('hidden');
+                            dom.liveDraftPanel.classList.remove('hidden');
                         }
+                    } else {
+                        initializeDraft(); // First time setup
                     }
-                    renderUI(picks);
-                }, (error) => {
-                    displayMessage("Error listening for updates. Check Firestore rules.", true);
+                    renderUI();
+                });
+
+                // Listener for picks data
+                onSnapshot(collection(db, PICKS_COLLECTION), (snapshot) => {
+                    localPicks = snapshot.docs.map(doc => doc.data());
+                    if (localPicks.length === 0 && initialPlayers.length > 0) {
+                         initializeDraft();
+                    }
+                    renderUI();
                 });
 
                 setupEventListeners();
             } catch (error) {
-                displayMessage("Connection failed. Check your Firebase config object.", true);
-                loadingStatus.classList.add('hidden');
+                console.error("Firebase Init Error:", error);
+                document.body.innerHTML = `<div class="text-white text-center p-8">Connection failed. Check your Firebase config object in the script.</div>`;
             }
         }
 
@@ -356,3 +377,4 @@
     </script>
 </body>
 </html>
+```
