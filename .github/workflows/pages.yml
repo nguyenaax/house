@@ -20,22 +20,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-          - name: Prepare site directory
-            run: |
-              mkdir public
-              # Copy non-dot files (like index.html) and explicitly copy .nojekyll
-              # This avoids trying to copy the public directory into itself.
-              cp -R * public/ || true
-              cp .nojekyll public/ || true 
-              
-          - name: Configure Pages
-            uses: actions/configure-pages@v4
-        
-          - name: Upload artifact
-            uses: actions/upload-pages-artifact@v3
-            with:
-              path: public
-        
-          - name: Deploy to GitHub Pages
-            id: deployment
-            uses: actions/deploy-pages@v4
+      - name: Prepare site directory
+        run: |
+          mkdir public
+          # Copy non-dot files (like index.html) and explicitly copy .nojekyll
+          # This avoids trying to copy the public directory into itself.
+          cp -R * public/ || true
+          cp .nojekyll public/ || true 
+          
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+    
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+    
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
