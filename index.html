@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alliance Housing Plot Live Draft Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -54,36 +54,37 @@
                                 <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Chosen Plot (G)</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-700">
-                            <!-- Mock Data - Replace with actual results after the draw -->
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-4 py-3 whitespace-nowrap font-extrabold text-green-400">1st Pick</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg">Thordar</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 18</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-4 py-3 whitespace-nowrap font-semibold">2nd Pick</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg">Grizelda</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 44</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150">
-                                <td class="px-4 py-3 whitespace-nowrap font-semibold">3rd Pick</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg">Balthazar</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-yellow-400">Plot 3</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150 bg-gray-700/50">
-                                <td class="px-4 py-3 whitespace-nowrap font-semibold text-gray-500">4th Pick</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-500">Anya</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-red-400">PENDING...</td>
-                            </tr>
-                            <tr class="hover:bg-gray-700 transition duration-150 bg-gray-700/50">
-                                <td class="px-4 py-3 whitespace-nowrap font-semibold text-gray-500">5th Pick</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-500">Drogon</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-red-400">PENDING...</td>
-                            </tr>
-                            <!-- Add more rows as needed -->
+                        <tbody id="pickOrderBody" class="divide-y divide-gray-700">
+                            <!-- Live pick data will be injected here by JavaScript -->
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Admin Controls Form -->
+                <div class="mt-8 pt-4 border-t border-gray-700">
+                    <h3 class="text-2xl font-bold mb-3 text-red-400">Organizer: Submit New Pick Result</h3>
+                    <form id="pickForm" class="space-y-4">
+                        <div id="loadingStatus" class="hidden p-2 text-center text-lg font-semibold bg-yellow-600 text-gray-900 rounded-md">Loading...</div>
+                        <div id="messageBox" class="hidden p-3 rounded-md text-sm font-medium"></div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="rankInput" class="block text-sm font-medium text-gray-400">Rank Number (e.g., 4)</label>
+                                <input type="number" id="rankInput" required min="1" max="54" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="winnerNameInput" class="block text-sm font-medium text-gray-400">Winner Name</label>
+                                <input type="text" id="winnerNameInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (e.g., Plot 52)</label>
+                            <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter 'Plot X' or 'PENDING...'">
+                        </div>
+                        <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                            Save Pick Result
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -161,5 +162,210 @@
         </footer>
 
     </div>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL FIREBASE CONFIG ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const loadingStatus = document.getElementById('loadingStatus');
+        const messageBox = document.getElementById('messageBox');
+        
+        let db, auth;
+        const PICK_COLLECTION_PATH = `artifacts/${appId}/public/data/picks`;
+
+        const initialPicks = [
+            { rank: 1, winnerName: "Thordar", chosenPlot: "Plot 18" },
+            { rank: 2, winnerName: "Grizelda", chosenPlot: "Plot 44" },
+            { rank: 3, winnerName: "Balthazar", chosenPlot: "Plot 3" },
+            { rank: 4, winnerName: "Anya", chosenPlot: "PENDING..." },
+            { rank: 5, winnerName: "Drogon", chosenPlot: "PENDING..." },
+            // You can manually add more names here once the RNG results are complete.
+        ];
+
+        // --- UTILITY FUNCTIONS ---
+
+        function displayMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.className = isError 
+                ? 'p-3 rounded-md text-sm font-medium bg-red-800 text-red-100' 
+                : 'p-3 rounded-md text-sm font-medium bg-green-800 text-green-100';
+            messageBox.classList.remove('hidden');
+        }
+
+        async function exponentialBackoffFetch(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response;
+            } catch (error) {
+                if (retries === 0) {
+                    throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return exponentialBackoffFetch(url, options, retries - 1, delay * 2);
+            }
+        }
+        
+        // --- FIREBASE INITIALIZATION ---
+
+        async function initFirebase() {
+            if (!firebaseConfig) {
+                displayMessage("Error: Firebase configuration is missing.", true);
+                return;
+            }
+
+            try {
+                loadingStatus.textContent = "Connecting to Database...";
+                loadingStatus.classList.remove('hidden');
+
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                loadingStatus.textContent = "Database Connected. Loading Picks...";
+                setupRealtimeListener();
+                setupFormSubmission();
+
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                displayMessage(`Error connecting to database. See console for details.`, true);
+                loadingStatus.classList.add('hidden');
+            }
+        }
+
+        // --- DATA MANAGEMENT ---
+
+        async function initializePicksIfEmpty() {
+            try {
+                for (const pick of initialPicks) {
+                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(pick.rank));
+                    // Use setDoc with merge: true to avoid overwriting existing data, but ensure names exist
+                    await setDoc(pickDocRef, pick, { merge: true });
+                }
+            } catch (error) {
+                console.error("Error initializing mock data:", error);
+            }
+        }
+
+        function renderPicks(picks) {
+            const tbody = document.getElementById('pickOrderBody');
+            tbody.innerHTML = '';
+            
+            // Sort picks by rank number
+            picks.sort((a, b) => a.rank - b.rank);
+
+            picks.forEach(pick => {
+                let statusClass = 'text-gray-500';
+                let rankText = pick.rank + ' Pick';
+                let plotText = pick.chosenPlot;
+
+                if (pick.rank === 1) {
+                    rankText = '1st Pick';
+                } else if (pick.rank === 2) {
+                    rankText = '2nd Pick';
+                } else if (pick.rank === 3) {
+                    rankText = '3rd Pick';
+                }
+
+                if (pick.chosenPlot && pick.chosenPlot.toLowerCase() !== 'pending...') {
+                    statusClass = pick.rank === 1 ? 'text-green-400' : 'text-yellow-400';
+                } else {
+                    plotText = 'PENDING...';
+                    statusClass = 'text-gray-500';
+                }
+
+                const row = document.createElement('tr');
+                row.className = `hover:bg-gray-700 transition duration-150 ${statusClass === 'text-gray-500' ? 'bg-gray-700/50' : ''}`;
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap font-semibold ${pick.rank <= 3 ? 'font-extrabold' : ''} ${statusClass}">${rankText}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-lg">${pick.winnerName}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-lg font-mono ${plotText === 'PENDING...' ? 'text-red-400' : 'text-yellow-400'}">${plotText}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            loadingStatus.classList.add('hidden');
+        }
+
+        function setupRealtimeListener() {
+            const picksQuery = collection(db, PICK_COLLECTION_PATH);
+            
+            // Listen for real-time updates
+            onSnapshot(picksQuery, (snapshot) => {
+                const picks = [];
+                snapshot.forEach(doc => {
+                    picks.push(doc.data());
+                });
+                if (picks.length === 0) {
+                    // If the collection is empty, initialize the mock data for the first time
+                    initializePicksIfEmpty();
+                } else {
+                    renderPicks(picks);
+                }
+            }, (error) => {
+                console.error("Error setting up real-time listener:", error);
+                displayMessage("Error listening for live updates. Check connection.", true);
+            });
+        }
+
+        // --- FORM SUBMISSION ---
+
+        function setupFormSubmission() {
+            const form = document.getElementById('pickForm');
+            const rankInput = document.getElementById('rankInput');
+            const winnerNameInput = document.getElementById('winnerNameInput');
+            const plotInput = document.getElementById('plotInput');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const rank = parseInt(rankInput.value);
+                const winnerName = winnerNameInput.value.trim();
+                const chosenPlot = plotInput.value.trim();
+                
+                if (isNaN(rank) || rank < 1) {
+                    displayMessage("Please enter a valid rank number.", true);
+                    return;
+                }
+
+                loadingStatus.textContent = `Saving Pick ${rank}...`;
+                loadingStatus.classList.remove('hidden');
+                messageBox.classList.add('hidden');
+
+                try {
+                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
+                    
+                    await setDoc(pickDocRef, {
+                        rank: rank,
+                        winnerName: winnerName,
+                        chosenPlot: chosenPlot
+                    }, { merge: true });
+
+                    displayMessage(`Successfully updated Rank ${rank} for ${winnerName}!`, false);
+                    form.reset(); 
+                } catch (error) {
+                    console.error("Error saving pick result:", error);
+                    displayMessage(`Failed to save pick. Error: ${error.message}`, true);
+                } finally {
+                    loadingStatus.classList.add('hidden');
+                }
+            });
+        }
+
+        // Start the application
+        window.onload = initFirebase;
+    </script>
 </body>
 </html>
