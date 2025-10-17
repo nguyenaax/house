@@ -12,49 +12,34 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #1a1c23; /* Dark stone color */
-            /* Subtle stone texture using SVG */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23000" fill-opacity="0.1"><rect x="50" width="50" height="50"/><rect y="50" width="50" height="50"/></g></svg>');
         }
         
-        /* Alliance Header Font */
-        .alliance-font {
-            font-family: 'Cinzel', serif;
-        }
+        .alliance-font { font-family: 'Cinzel', serif; }
 
-        /* Thematic Shadow/Border for Content Boxes - WoW UI Style */
         .alliance-panel {
-            background-color: rgba(15, 23, 42, 0.8); /* Dark Slate, semi-transparent */
+            background-color: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(4px);
             border: 2px solid;
             border-image-source: linear-gradient(to top, #ffd700, #b8860b);
             border-image-slice: 1;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(0,0,0,0.5); /* Golden Glow and Inner Shadow */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(0,0,0,0.5);
         }
         
-        /* Table Aesthetics */
         .table-header { 
-            background-color: #111827; /* Very Dark Blue, almost black */
-            border-bottom: 2px solid #ffd700; /* Golden separator */
+            background-color: #111827;
+            border-bottom: 2px solid #ffd700;
         }
-        tbody tr {
-            transition: background-color 0.3s ease;
-        }
-        tbody tr:nth-child(odd) {
-            background-color: rgba(30, 41, 59, 0.4);
-        }
-        tbody tr:hover {
-            background-color: rgba(255, 215, 0, 0.1); /* Subtle gold on hover */
-        }
+        tbody tr:nth-child(odd) { background-color: rgba(30, 41, 59, 0.4); }
+        tbody tr:hover { background-color: rgba(255, 215, 0, 0.1); }
 
-        /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 4px; border: 1px solid #1e293b; } /* Gold accent */
+        ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 4px; border: 1px solid #1e293b; }
         
-        /* WoW-style Button */
         .wow-button {
-            background: linear-gradient(180deg, #1e90ff 0%, #0056b3 100%); /* Alliance Blue Gradient */
-            border: 1px solid #c4a867; /* Gold border */
+            background: linear-gradient(180deg, #1e90ff 0%, #0056b3 100%);
+            border: 1px solid #c4a867;
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 2px 2px rgba(0, 0, 0, 0.4);
             transition: all 0.2s ease-in-out;
         }
@@ -64,26 +49,15 @@
             transform: translateY(-1px);
         }
         .wow-button:disabled {
-            background: #555;
-            border-color: #444;
-            cursor: not-allowed;
+            background: #555; border-color: #444; cursor: not-allowed; transform: none;
         }
         
-        /* Dice Roll Modal Styling */
         #diceModal {
-            display: none; /* Initially hidden */
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0,0,0,0.75);
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            cursor: pointer;
+            display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.75);
+            align-items: center; justify-content: center; z-index: 50; cursor: pointer;
         }
         #dice {
-            font-size: 10rem;
-            color: white;
-            text-shadow: 0 0 20px #ffd700;
+            font-size: 10rem; color: white; text-shadow: 0 0 20px #ffd700;
             animation: roll 1s ease-in-out;
         }
         @keyframes roll {
@@ -91,13 +65,10 @@
             50% { transform: rotate(180deg) scale(1.2); }
             100% { transform: rotate(360deg) scale(1); opacity: 1; }
         }
-
     </style>
 </head>
 <body class="text-gray-100 min-h-screen p-4 sm:p-8">
-<!-- FORCED REFRESH October 17 -->
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
         <header class="text-center mb-12">
             <h1 class="text-5xl sm:text-6xl font-extrabold text-yellow-400 alliance-font" style="text-shadow: 2px 2px 4px #000;">
                 Grand Alliance Draft Board
@@ -105,100 +76,98 @@
             <p class="text-blue-300 mt-2 text-xl alliance-font">By Right of Conquest: Claim Your Lordship's Plot</p>
         </header>
 
-        <!-- Main Content Area: Map (LARGE, Full Width) -->
-        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel mb-10">
-            <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center alliance-font">Available Plots Map (54 Total)</h2>
-            <img 
-                src="https://raw.githubusercontent.com/nguyenaax/house/main/TP%20house%20logo.png"
-                alt="Alliance Neighborhood House Plots Map with Numbers"
-                class="w-full h-auto rounded-lg shadow-lg border-2 border-yellow-600"
-            >
-            <p class="text-xs text-gray-400 mt-3 text-center">Reference this map for plot numbers during the live draft.</p>
-            <div id="claimedPlotsList" class="mt-6 p-4 bg-gray-900 rounded-lg hidden border-2 border-yellow-700">
-                <h3 class="text-xl font-semibold text-yellow-400 mb-3 alliance-font">Claimed Plots:</h3>
-                <div id="claimedPlotsContent" class="flex flex-wrap gap-2 text-lg font-mono text-white"></div>
-            </div>
-        </div>
-        
         <div class="grid lg:grid-cols-2 gap-10">
-            <!-- Live Pick Order Results -->
-            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
-                <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font">Live Pick & Selection Log</h2>
-                <div class="overflow-x-auto rounded-lg">
-                    <table id="pickOrderTable" class="min-w-full divide-y divide-gray-700">
-                        <thead class="table-header">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Rank</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Champion</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Plot Claimed</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pickOrderBody" class="divide-y divide-gray-700"></tbody>
-                    </table>
-                </div>
-
-                <!-- Admin Controls Form -->
-                <div class="mt-8 pt-4 border-t border-gray-700">
-                    <h3 class="text-2xl font-bold mb-3 text-red-400 alliance-font">Organizer: Claim New Plot</h3>
-                    <form id="pickForm" class="space-y-4">
-                        <div id="loadingStatus" class="hidden p-2 text-center text-lg font-semibold bg-yellow-600 text-gray-900 rounded-md">Connecting...</div>
-                        <div id="messageBox" class="hidden p-3 rounded-md text-sm font-medium"></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="rankInput" class="block text-sm font-medium text-gray-400">Rank Number (1-26)</label>
-                                <input type="number" id="rankInput" required min="1" max="26" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label for="winnerNameInput" class="block text-sm font-medium text-gray-400">Winner Name</label>
-                                <input type="text" id="winnerNameInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (1-54)</label>
-                            <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter 'Plot X' or 'PENDING...'">
-                        </div>
-                        <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">Save Pick Result</button>
-                    </form>
+            <!-- Left Column: Map -->
+            <div class="alliance-panel p-6 rounded-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center alliance-font">Available Plots Map (54 Total)</h2>
+                <img 
+                    src="https://raw.githubusercontent.com/nguyenaax/house/main/TP%20house%20logo.png"
+                    alt="Alliance Neighborhood House Plots Map with Numbers"
+                    class="w-full h-auto rounded-lg shadow-lg border-2 border-yellow-600"
+                >
+                <p class="text-xs text-gray-400 mt-3 text-center">Reference this map for plot numbers during the live draft.</p>
+                <div id="claimedPlotsList" class="mt-6 p-4 bg-gray-900 rounded-lg hidden border-2 border-yellow-700">
+                    <h3 class="text-xl font-semibold text-yellow-400 mb-3 alliance-font">Claimed Plots:</h3>
+                    <div id="claimedPlotsContent" class="flex flex-wrap gap-2 text-lg font-mono text-white"></div>
                 </div>
             </div>
 
-            <!-- Detailed Plan and Entry Log -->
-            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
-                <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font border-b-2 border-yellow-600/50 pb-2">Draft Process and Winner List</h2>
-                <div class="space-y-6 text-gray-300">
-                    <h3 class="text-2xl font-bold text-gray-200 alliance-font">## Step 1: Final Pick Order List</h3>
-                    <p>Use the button below to randomly assign the draft order. This action is irreversible and will update the database.</p>
-                    
-                    <button id="randomizeButton" class="w-full py-3 px-4 rounded-md shadow-lg text-lg font-bold text-yellow-300 wow-button border-yellow-400">
-                        Roll for Order!
-                    </button>
+            <!-- Right Column: Draft Controls & Log -->
+            <div class="space-y-10">
+                <!-- Live Pick Log -->
+                <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font">Live Pick & Selection Log</h2>
 
-                    <h4 class="text-xl font-semibold text-yellow-400 alliance-font pt-4">### Champion Ranks</h4>
+                    <!-- "Up Next" Display -->
+                    <div id="upNextPanel" class="text-center bg-gray-900/50 p-4 rounded-lg border-2 border-yellow-500 mb-6">
+                        <p id="nextPickerRank" class="text-lg text-gray-400 alliance-font">NOW PICKING</p>
+                        <p id="nextPickerName" class="text-3xl font-bold text-white">Press "Roll for Order!" to Start</p>
+                    </div>
+
                     <div class="overflow-x-auto rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-700 border border-gray-700">
+                        <table id="pickOrderTable" class="min-w-full divide-y divide-gray-700">
                             <thead class="table-header">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Rank</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Player Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Champion</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Plot Claimed</th>
                                 </tr>
                             </thead>
-                            <tbody id="championRanksBody" class="divide-y divide-gray-700 bg-slate-800/50"></tbody>
+                            <tbody id="pickOrderBody" class="divide-y divide-gray-700"></tbody>
                         </table>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-gray-200 alliance-font">## Step 2: The Draft Protocol</h3>
-                    <ol class="list-decimal list-inside ml-4 space-y-1">
-                        <li>**Announce the Rank:** Announce the winner with the current Rank (1st, 2nd, etc.).</li>
-                        <li>**The Selection:** The player announces their choice (e.g., "I choose Plot 18").</li>
-                        <li>**Immediate Update:** The organizer uses the form on the left to enter the chosen plot.</li>
-                        <li>**Repeat:** Proceed until all available plots are claimed.</li>
-                    </ol>
+                    <!-- Admin Controls Form -->
+                    <div class="mt-8 pt-4 border-t border-gray-700">
+                        <h3 class="text-2xl font-bold mb-3 text-red-400 alliance-font">Organizer: Claim New Plot</h3>
+                        <form id="pickForm" class="space-y-4">
+                            <div id="loadingStatus" class="hidden p-2 text-center text-lg font-semibold bg-yellow-600 text-gray-900 rounded-md">Connecting...</div>
+                            <div id="messageBox" class="hidden p-3 rounded-md text-sm font-medium"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="rankInput" class="block text-sm font-medium text-gray-400">Rank Number (1-26)</label>
+                                    <input type="number" id="rankInput" required min="1" max="26" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="winnerNameInput" class="block text-sm font-medium text-gray-400">Winner Name</label>
+                                    <input type="text" id="winnerNameInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (1-54)</label>
+                                <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter 'Plot X' or 'PENDING...'">
+                            </div>
+                            <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">Save Pick Result</button>
+                        </form>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Full-width section below for draft controls -->
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full mt-10">
+            <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font border-b-2 border-yellow-600/50 pb-2">Draft Process</h2>
+            <div class="space-y-6 text-gray-300">
+                <h3 class="text-2xl font-bold text-gray-200 alliance-font">## Step 1: Finalize Pick Order</h3>
+                <p>Use the button below to randomly assign the draft order. This action is irreversible and will update the database for everyone.</p>
+                
+                <button id="randomizeButton" class="w-full py-3 px-4 rounded-md shadow-lg text-lg font-bold text-yellow-300 wow-button border-yellow-400">
+                    Roll for Order!
+                </button>
+
+                <h3 class="text-2xl font-bold text-gray-200 alliance-font pt-4">## Step 2: The Draft Protocol</h3>
+                <ol class="list-decimal list-inside ml-4 space-y-1">
+                    <li>The name of the current player to pick is shown in the "NOW PICKING" panel above.</li>
+                    <li>Announce the player whose turn it is.</li>
+                    <li>The player announces their choice (e.g., "I choose Plot 18").</li>
+                    <li>The organizer uses the "Claim New Plot" form to enter the pick.</li>
+                    <li>Upon submission, the next player in the draft order will be revealed.</li>
+                </ol>
             </div>
         </div>
 
         <footer class="mt-12 text-center text-gray-500 text-sm">
-            Draft Board v2.3 with Modal Fix by Guild Master.
+            Draft Board v2.4 Surprise Draft by Guild Master.
         </footer>
     </div>
 
@@ -223,9 +192,12 @@
         const randomizeButton = document.getElementById('randomizeButton');
         const diceModal = document.getElementById('diceModal');
         const diceElement = document.getElementById('dice');
+        const nextPickerNameEl = document.getElementById('nextPickerName');
+        const nextPickerRankEl = document.getElementById('nextPickerRank');
         
         // --- GLOBAL STATE ---
         let db, currentPicksData = [];
+        let draftOrderDetermined = false;
         const appId = firebaseConfig.appId;
         const PICK_COLLECTION_PATH = `artifacts/${appId}/public/data/picks`;
         
@@ -262,40 +234,43 @@
             } catch (error) { console.error("Error initializing mock data:", error); }
         }
 
-        function renderTables(picks) {
+        function renderUI(picks) {
             const pickOrderBody = document.getElementById('pickOrderBody');
-            const championRanksBody = document.getElementById('championRanksBody');
             pickOrderBody.innerHTML = '';
-            championRanksBody.innerHTML = '';
             
             currentPicksData = picks.sort((a, b) => a.rank - b.rank);
             let claimedPlots = [];
-
-            currentPicksData.forEach(pick => {
-                const plotMatch = pick.chosenPlot?.match(/plot\s*(\d+)/i);
-                if (plotMatch) claimedPlots.push(pick.chosenPlot);
-
+            
+            // Filter for completed picks to show in the log
+            const completedPicks = currentPicksData.filter(p => p.chosenPlot !== "PENDING...");
+            
+            completedPicks.forEach(pick => {
+                claimedPlots.push(pick.chosenPlot);
                 const pickRow = document.createElement('tr');
                 pickRow.innerHTML = `
                     <td class="px-4 py-3 whitespace-nowrap font-semibold">${pick.rank}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-lg">${pick.winnerName}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-lg font-mono ${!plotMatch ? 'text-red-400' : 'text-green-400'}">${plotMatch ? pick.chosenPlot : 'PENDING...'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-lg font-mono text-green-400">${pick.chosenPlot}</td>
                 `;
                 pickOrderBody.appendChild(pickRow);
-
-                const rankRow = document.createElement('tr');
-                rankRow.innerHTML = `
-                    <td class="px-4 py-2 whitespace-nowrap text-sm">${pick.rank}</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm">${pick.winnerName}</td>
-                `;
-                championRanksBody.appendChild(rankRow);
             });
+
+            // Update "Up Next" panel
+            const nextPicker = currentPicksData.find(p => p.chosenPlot === 'PENDING...');
+            
+            if (nextPicker && draftOrderDetermined) {
+                nextPickerRankEl.textContent = `RANK ${nextPicker.rank} IS PICKING`;
+                nextPickerNameEl.textContent = nextPicker.winnerName;
+            } else if (!nextPicker && draftOrderDetermined) {
+                nextPickerRankEl.textContent = "DRAFT COMPLETE";
+                nextPickerNameEl.textContent = "All plots have been claimed!";
+            }
             
             claimedPlotsContent.innerHTML = claimedPlots.map(p => `<span class="bg-blue-700 p-1 rounded-md text-sm">${p.replace(/plot\s*/i, 'P')}</span>`).join('');
             claimedPlotsList.classList.toggle('hidden', claimedPlots.length === 0);
             loadingStatus.classList.add('hidden');
         }
-
+        
         // --- DICE ROLL & RANDOMIZATION LOGIC ---
         async function handleRandomizeClick() {
             if (!confirm("Are you sure you want to randomize the draft order? This cannot be undone.")) return;
@@ -303,53 +278,62 @@
             randomizeButton.disabled = true;
             randomizeButton.textContent = "Shuffling...";
 
-            // 1. Animate Dice and hide modal afterwards
+            // 1. Animate Dice
             diceModal.style.display = 'flex';
-            const animationPromise = (async () => {
-                const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-                for (let i = 0; i < 10; i++) {
-                    diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
+            const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            for (let i = 0; i < 10; i++) {
                 diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
-            })();
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
+            
+            setTimeout(() => { diceModal.style.display = 'none'; }, 500);
 
-            animationPromise.then(() => {
-                setTimeout(() => {
-                    diceModal.style.display = 'none';
-                }, 500); // Wait 0.5s to show final face before hiding
-            });
-
-            // 2. Shuffle names
+            // 2. Shuffle names & prepare new data structure
             const shuffledPlayers = [...initialPlayers];
             shuffleArray(shuffledPlayers);
+            const newPickOrder = shuffledPlayers.map((player, index) => ({
+                rank: index + 1,
+                winnerName: player,
+                chosenPlot: "PENDING..."
+            }));
 
-            // 3. Update Firestore in the background
+            // 3. Overwrite Firestore with the new randomized order
             try {
-                const updatePromises = shuffledPlayers.map((player, index) => {
-                    const rank = index + 1;
-                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
-                    return setDoc(pickDocRef, { winnerName: player }, { merge: true });
+                const updatePromises = newPickOrder.map(pick => {
+                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(pick.rank));
+                    return setDoc(pickDocRef, pick); // Use setDoc to overwrite completely
                 });
                 await Promise.all(updatePromises);
+                draftOrderDetermined = true;
                 displayMessage("Draft order has been successfully randomized!", false);
                 randomizeButton.textContent = "Order Randomized!";
             } catch (error) {
                 console.error("Error updating randomized order:", error);
                 displayMessage("Failed to save the new order. Please check console.", true);
-                randomizeButton.disabled = false; // Re-enable on failure
+                randomizeButton.disabled = false;
                 randomizeButton.textContent = "Roll for Order!";
             }
         }
-
+        
         // --- EVENT LISTENERS & INITIALIZATION ---
         function setupRealtimeListener() {
             try {
                 const picksQuery = collection(db, PICK_COLLECTION_PATH);
                 onSnapshot(picksQuery, (snapshot) => {
                     const picks = snapshot.docs.map(doc => doc.data());
-                    if (picks.length < initialPlayers.length) initializePicksIfEmpty();
-                    renderTables(picks);
+                    if (picks.length === 0) {
+                        initializePicksIfEmpty();
+                    } else {
+                        // Check if the draft order has been set by seeing if names differ from initial order
+                        const isRandomized = picks.sort((a,b) => a.rank - b.rank).some((pick, index) => pick.winnerName !== initialPlayers[index]);
+                        if (isRandomized) {
+                            draftOrderDetermined = true;
+                            randomizeButton.disabled = true;
+                            randomizeButton.textContent = "Order Randomized!";
+                        }
+                    }
+                    renderUI(picks);
                 }, (error) => {
                     displayMessage("Error listening for live updates. Check Firestore rules.", true);
                 });
@@ -363,6 +347,7 @@
                 const winnerName = document.getElementById('winnerNameInput').value.trim();
                 const chosenPlot = document.getElementById('plotInput').value.trim();
                 
+                if (!draftOrderDetermined) return displayMessage("You must roll for the order first!", true);
                 if (isNaN(rank) || rank < 1) return displayMessage("Please enter a valid rank number.", true);
 
                 const normalizedPlot = chosenPlot.match(/plot\s*(\d+)/i) ? chosenPlot.replace(/plot\s*/i, 'Plot ') : `Plot ${chosenPlot}`;
@@ -376,8 +361,8 @@
 
                 try {
                     const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
-                    await setDoc(pickDocRef, { rank, winnerName, chosenPlot: normalizedPlot }, { merge: true });
-                    displayMessage(`Successfully updated Rank ${rank} for ${winnerName}! Claimed ${normalizedPlot}!`, false);
+                    await setDoc(pickDocRef, { chosenPlot: normalizedPlot }, { merge: true });
+                    displayMessage(`Successfully updated Rank ${rank}! Claimed ${normalizedPlot}!`, false);
                     e.target.reset();
                 } catch (error) { displayMessage(`Failed to save pick. Error: ${error.message}`, true); }
                 finally { loadingStatus.classList.add('hidden'); }
@@ -393,10 +378,7 @@
                 setupRealtimeListener();
                 setupFormSubmission();
                 randomizeButton.addEventListener('click', handleRandomizeClick);
-                // Allow clicking the modal background to close it
-                diceModal.addEventListener('click', () => {
-                    diceModal.style.display = 'none';
-                });
+                diceModal.addEventListener('click', () => { diceModal.style.display = 'none'; });
             } catch (error) {
                 displayMessage("Connection failed. Check your Firebase config object.", true);
                 loadingStatus.classList.add('hidden');
