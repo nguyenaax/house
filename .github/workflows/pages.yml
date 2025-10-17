@@ -19,16 +19,14 @@ jobs:
     
       - name: Prepare site directory
         run: |
-          # The Canvas content must be served from the root of the artifact.
-          # This assumes index.html, .nojekyll, etc., are already in the root
-          # of the repository, which is the current configuration.
           mkdir public
-          # Copy everything except Git internals into public folder for deployment
-          shopt -s dotglob || true
-          cp -R ./* public/
+          # Copy non-dot files (like index.html) and explicitly copy .nojekyll
+          # This avoids trying to copy the public directory into itself.
+          cp -R * public/ || true
+          cp .nojekyll public/ || true 
           
       - name: Configure Pages
-        uses: actions/configure-pages@v4  # Fixed syntax and updated to v4
+        uses: actions/configure-pages@v4
     
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -36,4 +34,5 @@ jobs:
           path: public
     
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4 # Fixed syntax and updated to v4
+        uses: actions/deploy-pages@v4
+
