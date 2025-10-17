@@ -170,8 +170,20 @@
         import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL FIREBASE CONFIG ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // When running outside of the Canvas, the __firebase_config variable is undefined.
+        // You MUST replace the placeholder values below with your actual Firebase project keys
+        // to make the live database connection work on your GitHub Pages site!
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'guild-draft-board-1'; // Fixed external ID
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // --- IMPORTANT: REPLACE THESE WITH YOUR OWN FIREBASE PROJECT CONFIGURATION ---
+            apiKey: "YOUR_API_KEY_HERE", 
+            authDomain: "your-project-id.firebaseapp.com", 
+            projectId: "your-project-id-12345", 
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:12345678901:web:abcdef1234567890abcdef"
+            // The keys above must be replaced for live functionality!
+        };
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         const loadingStatus = document.getElementById('loadingStatus');
@@ -216,8 +228,10 @@
         // --- FIREBASE INITIALIZATION ---
 
         async function initFirebase() {
-            if (!firebaseConfig) {
-                displayMessage("Error: Firebase configuration is missing.", true);
+            // Check if the essential API key placeholder is still present when running externally
+            if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE" && typeof __firebase_config === 'undefined') {
+                displayMessage("🚨 ERROR: The live board requires Firebase setup. Please replace the placeholder API key in the code!", true);
+                loadingStatus.classList.add('hidden');
                 return;
             }
 
@@ -232,6 +246,7 @@
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
+                    // Sign in anonymously for simple read/write access to public data
                     await signInAnonymously(auth);
                 }
 
