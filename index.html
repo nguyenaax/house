@@ -189,29 +189,6 @@
         </footer>
 
     </div>
-
-    <!-- Firebase Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
-        // --- GLOBAL FIREBASE CONFIG ---
-        const appId = 'guild-draft-board-1'; // Hardcoded for external hosting consistency
-        
-        // This array will hold the current data from Firestore for validation
-        let currentPicksData = []; 
-
-        // YOU HAVE CONFIRMED THESE ARE YOUR CORRECT KEYS:
-        const firebaseConfig = {
-            apiKey: "AIzaSyBxl0Y7VvxDBk8BMXIi3j3QE3hFOvuPrA", 
-            authDomain: "tp-house-raffle.firebaseapp.com", 
-            projectId: "tp-house-raffle", 
-            storageBucket: "tp-house-raffle.firebasestorage.app", 
-            messagingSenderId: "886855375377", 
-            appId: "1:886855375377:web:c89f6a41fc767b17242fb0"
-        };
-        
         const loadingStatus = document.getElementById('loadingStatus');
         const messageBox = document.getElementById('messageBox');
         const claimedPlotsList = document.getElementById('claimedPlotsList');
