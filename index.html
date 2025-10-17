@@ -9,12 +9,11 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-image: url('https://raw.githubusercontent.com/nguyenaax/house/main/housebg.png');
-            background-size: cover; 
-            background-position: center center; 
-            background-attachment: fixed; 
-            background-repeat: no-repeat;
-            background-color: #1a1c23; /* Fallback color */
+            background-color: #0A111F; /* Very dark blue base */
+            background-image:
+                radial-gradient(circle at top, rgba(30, 144, 255, 0.2) 0%, transparent 40%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><g fill="%23b8860b" fill-opacity="0.05"><path d="M0 0 H40 V40 H0 Z M40 40 H80 V80 H40 Z"/></g></svg>');
+            background-attachment: fixed;
         }
         .alliance-font { font-family: 'Cinzel', serif; }
         .alliance-panel {
@@ -120,7 +119,7 @@
             </div>
         </div>
 
-        <footer class="mt-12 text-center text-gray-500 text-sm">Draft Board v2.8 by Guild Master.</footer>
+        <footer class="mt-12 text-center text-gray-500 text-sm">Draft Board v2.9 by Guild Master.</footer>
     </div>
 
     <div id="diceModal"><div id="dice">⚀</div></div>
@@ -255,24 +254,19 @@
             const currentIdx = sortedPicks.findIndex(p => p.rank === localDraftState.currentPickRank);
             
             let nextPicker = null;
-            // First pass: look for PENDING picks after current
-            for (let i = currentIdx + 1; i < sortedPicks.length; i++) {
-                if (sortedPicks[i].chosenPlot === PENDING) { nextPicker = sortedPicks[i]; break; }
-            }
-            // Second pass: look for PENDING picks from start
-            if (!nextPicker) {
-                for (let i = 0; i < sortedPicks.length; i++) {
-                    if (sortedPicks[i].chosenPlot === PENDING) { nextPicker = sortedPicks[i]; break; }
+            for (let i = 1; i <= sortedPicks.length; i++) {
+                const potentialNext = sortedPicks[(currentIdx + i) % sortedPicks.length];
+                if (potentialNext.chosenPlot === PENDING) {
+                    nextPicker = potentialNext;
+                    break;
                 }
             }
-            // Third & Fourth pass: look for SKIPPED picks
             if (!nextPicker) {
-                for (let i = currentIdx + 1; i < sortedPicks.length; i++) {
-                    if (sortedPicks[i].chosenPlot === SKIPPED) { nextPicker = sortedPicks[i]; break; }
-                }
-                if (!nextPicker) {
-                     for (let i = 0; i < sortedPicks.length; i++) {
-                        if (sortedPicks[i].chosenPlot === SKIPPED) { nextPicker = sortedPicks[i]; break; }
+                 for (let i = 1; i <= sortedPicks.length; i++) {
+                    const potentialNext = sortedPicks[(currentIdx + i) % sortedPicks.length];
+                    if (potentialNext.chosenPlot === SKIPPED) {
+                        nextPicker = potentialNext;
+                        break;
                     }
                 }
             }
@@ -287,7 +281,14 @@
         function setupEventListeners() {
             dom.randomizeButton.addEventListener('click', handleRandomizeClick);
             dom.diceModal.addEventListener('click', () => { dom.diceModal.style.display = 'none'; });
-            dom.nextPickerButton.addEventListener('click', advanceToNextPicker);
+            dom.nextPickerButton.addEventListener('click', () => {
+                const currentPicker = localPicks.find(p => p.rank === localDraftState.currentPickRank);
+                if (currentPicker && currentPicker.chosenPlot === PENDING) {
+                    displayMessage("Current player has not picked a plot. Please save or skip their pick.", true);
+                    return;
+                }
+                advanceToNextPicker();
+            });
 
             dom.pickForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
