@@ -14,27 +14,27 @@ jobs:
       id-token: write
 
     steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
-
-  - name: Prepare site directory
-    run: |
-      # The Canvas content must be served from the root of the artifact.
-      # This assumes index.html, .nojekyll, etc., are already in the root
-      # of the repository, which is the current configuration.
-      mkdir public
-      # Copy everything except Git internals into public folder for deployment
-      shopt -s dotglob || true
-      cp -R ./* public/
-      
-  - name: Configure Pages
-    uses: actions/configure-pages@v3
-
-  # --- CRITICAL FIX: Updated to v3 ---
-  - name: Upload artifact
-    uses: actions/upload-pages-artifact@v3
-    with:
-      path: public
-
-  - name: Deploy to GitHub Pages
-    uses: actions/deploy-pages@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Prepare site directory
+        run: |
+          # The Canvas content must be served from the root of the artifact.
+          # This assumes index.html, .nojekyll, etc., are already in the root
+          # of the repository, which is the current configuration.
+          mkdir public
+          # Copy everything except Git internals into public folder for deployment
+          shopt -s dotglob || true
+          cp -R ./* public/
+          
+      - name: Configure Pages
+        uses: actions:configure-pages@v3
+    
+      # --- CRITICAL FIX: Updated to v3 ---
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+    
+      - name: Deploy to GitHub Pages
+        uses: actions:deploy-pages@v4
