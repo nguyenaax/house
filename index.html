@@ -176,13 +176,14 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'guild-draft-board-1'; // Fixed external ID
         // Final Correct Structure
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyBxl0Y7VvxDBk8BMXIi3j3QE3hRFOvuPrA", // YOUR KEY
-            authDomain: "tp-house-raffle.firebaseapp.com", // YOUR DOMAIN
-            projectId: "tp-house-raffle", // YOUR PROJECT ID
-            storageBucket: "tp-house-raffle.firebasestorage.app", // YOUR STORAGE BUCKET
-            messagingSenderId: "886855375377", // YOUR SENDER ID
-            appId: "1:886855375377:web:c89f6a41fc767b17242fb0" // YOUR APP ID
-        };
+    // 🚨 ENSURE THESE ARE YOUR REAL KEYS, NOT PLACEHOLDERS!
+    apiKey: "AIzaSyBxl0Y7VvxDBk8BMXIi3j3QE3hRFOvuPrA", 
+    authDomain: "tp-house-raffle.firebaseapp.com", 
+    projectId: "tp-house-raffle", 
+    storageBucket: "tp-house-raffle.firebasestorage.app", 
+    messagingSenderId: "886855375377", 
+    appId: "1:886855375377:web:c89f6a41fc767b17242fb0"
+};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         const loadingStatus = document.getElementById('loadingStatus');
