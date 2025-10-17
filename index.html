@@ -63,6 +63,33 @@
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5);
             transform: translateY(-1px);
         }
+        .wow-button:disabled {
+            background: #555;
+            border-color: #444;
+            cursor: not-allowed;
+        }
+        
+        /* Dice Roll Modal Styling */
+        #diceModal {
+            display: none; /* Initially hidden */
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.75);
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        #dice {
+            font-size: 10rem;
+            color: white;
+            text-shadow: 0 0 20px #ffd700;
+            animation: roll 1s ease-in-out;
+        }
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        }
 
     </style>
 </head>
@@ -80,7 +107,6 @@
         <!-- Main Content Area: Map (LARGE, Full Width) -->
         <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel mb-10">
             <h2 class="text-3xl font-bold mb-4 text-blue-400 text-center alliance-font">Available Plots Map (54 Total)</h2>
-            <!-- Image source updated and container size increased -->
             <img 
                 src="https://pbs.twimg.com/media/G2qVYZsXIAABwE4.jpg:large" 
                 alt="Alliance Neighborhood House Plots Map with Numbers"
@@ -88,19 +114,13 @@
                 onerror="this.onerror=null; this.src='https://placehold.co/1200x675/1f2937/9ca3af?text=Error+Loading+Map+Check+URL';"
             >
             <p class="text-xs text-gray-400 mt-3 text-center">Reference this map for plot numbers during the live draft.</p>
-            
-            <!-- Claimed Plots List -->
             <div id="claimedPlotsList" class="mt-6 p-4 bg-gray-900 rounded-lg hidden border-2 border-yellow-700">
                 <h3 class="text-xl font-semibold text-yellow-400 mb-3 alliance-font">Claimed Plots:</h3>
-                <div id="claimedPlotsContent" class="flex flex-wrap gap-2 text-lg font-mono text-white">
-                    <!-- Claimed plots will be inserted here -->
-                </div>
+                <div id="claimedPlotsContent" class="flex flex-wrap gap-2 text-lg font-mono text-white"></div>
             </div>
         </div>
         
-        <!-- Live Pick Order Results and Plan/Log (Side-by-Side below map) -->
         <div class="grid lg:grid-cols-2 gap-10">
-
             <!-- Live Pick Order Results -->
             <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
                 <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font">Live Pick & Selection Log</h2>
@@ -108,14 +128,12 @@
                     <table id="pickOrderTable" class="min-w-full divide-y divide-gray-700">
                         <thead class="table-header">
                             <tr>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Rank (E)</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Champion (F)</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Plot Claimed (G)</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Rank</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Champion</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Plot Claimed</th>
                             </tr>
                         </thead>
-                        <tbody id="pickOrderBody" class="divide-y divide-gray-700">
-                            <!-- Live pick data will be injected here by JavaScript -->
-                        </tbody>
+                        <tbody id="pickOrderBody" class="divide-y divide-gray-700"></tbody>
                     </table>
                 </div>
 
@@ -125,7 +143,6 @@
                     <form id="pickForm" class="space-y-4">
                         <div id="loadingStatus" class="hidden p-2 text-center text-lg font-semibold bg-yellow-600 text-gray-900 rounded-md">Connecting...</div>
                         <div id="messageBox" class="hidden p-3 rounded-md text-sm font-medium"></div>
-
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="rankInput" class="block text-sm font-medium text-gray-400">Rank Number (1-26)</label>
@@ -140,9 +157,7 @@
                             <label for="plotInput" class="block text-sm font-medium text-gray-400">Chosen Plot (1-54)</label>
                             <input type="text" id="plotInput" required class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter 'Plot X' or 'PENDING...'">
                         </div>
-                        <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">
-                            Save Pick Result
-                        </button>
+                        <button type="submit" class="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white wow-button">Save Pick Result</button>
                     </form>
                 </div>
             </div>
@@ -150,16 +165,15 @@
             <!-- Detailed Plan and Entry Log -->
             <div class="bg-gray-800 p-6 rounded-xl shadow-2xl alliance-panel h-full">
                 <h2 class="text-3xl font-bold mb-4 text-blue-400 alliance-font border-b-2 border-yellow-600/50 pb-2">Draft Process and Winner List</h2>
-
-                <!-- Updated Content -->
                 <div class="space-y-6 text-gray-300">
-                    <h3 class="text-2xl font-bold text-gray-200 alliance-font"># Alliance Housing Plot Selection Plan</h3>
-                    <p>The randomized pick order for the 26 guild members has been finalized (or will be finalized live). This board will track the selection process as each player claims their plot.</p>
-                    
                     <h3 class="text-2xl font-bold text-gray-200 alliance-font">## Step 1: Final Pick Order List</h3>
-                    <p>The names below represent the final 26 winners in the **randomized pick order**. The order in the table on the left (Rank 1 through 26) must match this list, ensuring transparency for the draft.</p>
+                    <p>Use the button below to randomly assign the draft order. This action is irreversible and will update the database.</p>
                     
-                    <h4 class="text-xl font-semibold text-yellow-400 alliance-font">### Champion Ranks</h4>
+                    <button id="randomizeButton" class="w-full py-3 px-4 rounded-md shadow-lg text-lg font-bold text-yellow-300 wow-button border-yellow-400">
+                        Roll for Order!
+                    </button>
+
+                    <h4 class="text-xl font-semibold text-yellow-400 alliance-font pt-4">### Champion Ranks</h4>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="min-w-full divide-y divide-gray-700 border border-gray-700">
                             <thead class="table-header">
@@ -168,35 +182,7 @@
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-yellow-400 uppercase tracking-wider">Player Name</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-700 bg-slate-800/50">
-                                <!-- This list must be updated manually once the random draw is complete -->
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">1</td><td class="px-4 py-2 whitespace-nowrap text-sm">Duckiimist</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">2</td><td class="px-4 py-2 whitespace-nowrap text-sm">Kirikomain</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">3</td><td class="px-4 py-2 whitespace-nowrap text-sm">Oshallá</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">4</td><td class="px-4 py-2 whitespace-nowrap text-sm">Cultzivate</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">5</td><td class="px-4 py-2 whitespace-nowrap text-sm">Meowlygos</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">6</td><td class="px-4 py-2 whitespace-nowrap text-sm">Ryxw</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">7</td><td class="px-4 py-2 whitespace-nowrap text-sm">Xephostwo</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">8</td><td class="px-4 py-2 whitespace-nowrap text-sm">Kevxh</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">9</td><td class="px-4 py-2 whitespace-nowrap text-sm">Tushytantrum</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">10</td><td class="px-4 py-2 whitespace-nowrap text-sm">Lygerxd</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">11</td><td class="px-4 py-2 whitespace-nowrap text-sm">Yakarue</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">12</td><td class="px-4 py-2 whitespace-nowrap text-sm">Bizzm</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">13</td><td class="px-4 py-2 whitespace-nowrap text-sm">Azunazx</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">14</td><td class="px-4 py-2 whitespace-nowrap text-sm">Akuwu</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">15</td><td class="px-4 py-2 whitespace-nowrap text-sm">Preyxd</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">16</td><td class="px-4 py-2 whitespace-nowrap text-sm">Fightdk</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">17</td><td class="px-4 py-2 whitespace-nowrap text-sm">Maverris</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">18</td><td class="px-4 py-2 whitespace-nowrap text-sm">Evne</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">19</td><td class="px-4 py-2 whitespace-nowrap text-sm">Garms</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">20</td><td class="px-4 py-2 whitespace-nowrap text-sm">Arzy</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">21</td><td class="px-4 py-2 whitespace-nowrap text-sm">Dabnel</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">22</td><td class="px-4 py-2 whitespace-nowrap text-sm">Subti</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">23</td><td class="px-4 py-2 whitespace-nowrap text-sm">Hypeboy</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">24</td><td class="px-4 py-2 whitespace-nowrap text-sm">Cququ</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">25</td><td class="px-4 py-2 whitespace-nowrap text-sm">Nerftank</td></tr>
-                                <tr><td class="px-4 py-2 whitespace-nowrap text-sm">26</td><td class="px-4 py-2 whitespace-nowrap text-sm">Salisw</td></tr>
-                            </tbody>
+                            <tbody id="championRanksBody" class="divide-y divide-gray-700 bg-slate-800/50"></tbody>
                         </table>
                     </div>
 
@@ -204,201 +190,213 @@
                     <ol class="list-decimal list-inside ml-4 space-y-1">
                         <li>**Announce the Rank:** Announce the winner with the current Rank (1st, 2nd, etc.).</li>
                         <li>**The Selection:** The player announces their choice (e.g., "I choose Plot 18").</li>
-                        <li>**Immediate Update:** The organizer uses the form on the left to enter the chosen plot. The **system will automatically check for duplicate claims.**</li>
-                        <li>**Trade/Collision:** If a plot is already claimed, the organizer will be warned, allowing the player to choose again or initiate a trade discussion with the original claimant.</li>
-                        <li>**Repeat:** Proceed to the next Rank until all available plots are claimed.</li>
+                        <li>**Immediate Update:** The organizer uses the form on the left to enter the chosen plot.</li>
+                        <li>**Repeat:** Proceed until all available plots are claimed.</li>
                     </ol>
-                    <p class="mt-4 p-3 bg-blue-900/30 border-l-4 border-yellow-500 rounded-md italic">
-                        **Protocol Note:** Ensure all players have the live board link for maximum transparency. Hard refresh the page often during the draft!
-                    </p>
                 </div>
             </div>
         </div>
 
         <footer class="mt-12 text-center text-gray-500 text-sm">
-            Draft Board generated by Guild Master (or your friendly AI Assistant). <span class="text-blue-500 font-semibold alliance-font">(v2.1 No-Auth Version)</span>
+            Draft Board v2.2 with Dice Roll by Guild Master.
         </footer>
-
     </div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        // TODO: Add your Firebase project's configuration here
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+    <!-- Dice Roll Modal -->
+    <div id="diceModal">
+        <div id="dice">⚀</div>
+    </div>
 
-        // Import the functions you need from the SDKs
+    <script type="module">
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID"
+        };
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         
+        // --- DOM ELEMENTS ---
         const loadingStatus = document.getElementById('loadingStatus');
         const messageBox = document.getElementById('messageBox');
         const claimedPlotsList = document.getElementById('claimedPlotsList');
         const claimedPlotsContent = document.getElementById('claimedPlotsContent');
+        const randomizeButton = document.getElementById('randomizeButton');
+        const diceModal = document.getElementById('diceModal');
+        const diceElement = document.getElementById('dice');
         
+        // --- GLOBAL STATE ---
         let db, currentPicksData = [];
         const appId = firebaseConfig.appId;
         const PICK_COLLECTION_PATH = `artifacts/${appId}/public/data/picks`;
-
-        const initialPicks = [
-            { rank: 1, winnerName: "Duckiimist", chosenPlot: "PENDING..." }, { rank: 2, winnerName: "Kirikomain", chosenPlot: "PENDING..." },
-            { rank: 3, winnerName: "Oshallá", chosenPlot: "PENDING..." }, { rank: 4, winnerName: "Cultzivate", chosenPlot: "PENDING..." },
-            { rank: 5, winnerName: "Meowlygos", chosenPlot: "PENDING..." }, { rank: 6, winnerName: "Ryxw", chosenPlot: "PENDING..." },
-            { rank: 7, winnerName: "Xephostwo", chosenPlot: "PENDING..." }, { rank: 8, winnerName: "Kevxh", chosenPlot: "PENDING..." },
-            { rank: 9, winnerName: "Tushytantrum", chosenPlot: "PENDING..." }, { rank: 10, winnerName: "Lygerxd", chosenPlot: "PENDING..." },
-            { rank: 11, winnerName: "Yakarue", chosenPlot: "PENDING..." }, { rank: 12, winnerName: "Bizzm", chosenPlot: "PENDING..." },
-            { rank: 13, winnerName: "Azunazx", chosenPlot: "PENDING..." }, { rank: 14, winnerName: "Akuwu", chosenPlot: "PENDING..." },
-            { rank: 15, winnerName: "Preyxd", chosenPlot: "PENDING..." }, { rank: 16, winnerName: "Fightdk", chosenPlot: "PENDING..." },
-            { rank: 17, winnerName: "Maverris", chosenPlot: "PENDING..." }, { rank: 18, winnerName: "Evne", chosenPlot: "PENDING..." },
-            { rank: 19, winnerName: "Garms", chosenPlot: "PENDING..." }, { rank: 20, winnerName: "Arzy", chosenPlot: "PENDING..." },
-            { rank: 21, winnerName: "Dabnel", chosenPlot: "PENDING..." }, { rank: 22, winnerName: "Subti", chosenPlot: "PENDING..." },
-            { rank: 23, winnerName: "Hypeboy", chosenPlot: "PENDING..." }, { rank: 24, winnerName: "Cququ", chosenPlot: "PENDING..." },
-            { rank: 25, winnerName: "Nerftank", chosenPlot: "PENDING..." }, { rank: 26, winnerName: "Salisw", chosenPlot: "PENDING..." }
+        
+        // Master list of players - this is the source for randomization
+        const initialPlayers = [
+            "Duckiimist", "Kirikomain", "Oshallá", "Cultzivate", "Meowlygos", "Ryxw", 
+            "Xephostwo", "Kevxh", "Tushytantrum", "Lygerxd", "Yakarue", "Bizzm", "Azunazx", 
+            "Akuwu", "Preyxd", "Fightdk", "Maverris", "Evne", "Garms", "Arzy", "Dabnel", 
+            "Subti", "Hypeboy", "Cququ", "Nerftank", "Salisw"
         ];
 
+        // --- UTILITY FUNCTIONS ---
         function displayMessage(message, isError = false) {
             messageBox.innerHTML = message;
-            messageBox.className = isError 
-                ? 'p-3 rounded-md text-sm font-medium bg-red-800 text-red-100' 
-                : 'p-3 rounded-md text-sm font-medium bg-green-800 text-green-100';
+            messageBox.className = `p-3 rounded-md text-sm font-medium ${isError ? 'bg-red-800 text-red-100' : 'bg-green-800 text-green-100'}`;
             messageBox.classList.remove('hidden');
         }
 
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        // --- DATA MANAGEMENT & RENDERING ---
         async function initializePicksIfEmpty() {
             try {
-                for (const pick of initialPicks) {
-                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(pick.rank));
-                    await setDoc(pickDocRef, pick, { merge: true });
-                }
+                const updatePromises = initialPlayers.map((player, index) => {
+                    const rank = index + 1;
+                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
+                    return setDoc(pickDocRef, { rank, winnerName: player, chosenPlot: "PENDING..." }, { merge: true });
+                });
+                await Promise.all(updatePromises);
+            } catch (error) { console.error("Error initializing mock data:", error); }
+        }
+
+        function renderTables(picks) {
+            const pickOrderBody = document.getElementById('pickOrderBody');
+            const championRanksBody = document.getElementById('championRanksBody');
+            pickOrderBody.innerHTML = '';
+            championRanksBody.innerHTML = '';
+            
+            currentPicksData = picks.sort((a, b) => a.rank - b.rank);
+            let claimedPlots = [];
+
+            currentPicksData.forEach(pick => {
+                const plotMatch = pick.chosenPlot?.match(/plot\s*(\d+)/i);
+                if (plotMatch) claimedPlots.push(pick.chosenPlot);
+
+                // Render Left Table (Live Pick Log)
+                const pickRow = document.createElement('tr');
+                pickRow.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap font-semibold">${pick.rank}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-lg">${pick.winnerName}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-lg font-mono ${!plotMatch ? 'text-red-400' : 'text-green-400'}">${plotMatch ? pick.chosenPlot : 'PENDING...'}</td>
+                `;
+                pickOrderBody.appendChild(pickRow);
+
+                // Render Right Table (Champion Ranks)
+                const rankRow = document.createElement('tr');
+                rankRow.innerHTML = `
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${pick.rank}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">${pick.winnerName}</td>
+                `;
+                championRanksBody.appendChild(rankRow);
+            });
+            
+            claimedPlotsContent.innerHTML = claimedPlots.map(p => `<span class="bg-blue-700 p-1 rounded-md text-sm">${p.replace(/plot\s*/i, 'P')}</span>`).join('');
+            claimedPlotsList.classList.toggle('hidden', claimedPlots.length === 0);
+            loadingStatus.classList.add('hidden');
+        }
+
+        // --- DICE ROLL & RANDOMIZATION LOGIC ---
+        async function handleRandomizeClick() {
+            if (!confirm("Are you sure you want to randomize the draft order? This cannot be undone.")) return;
+            
+            randomizeButton.disabled = true;
+            randomizeButton.textContent = "Shuffling...";
+
+            // 1. Animate Dice
+            const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            diceModal.style.display = 'flex';
+            for (let i = 0; i < 10; i++) {
+                diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            diceElement.textContent = diceFaces[Math.floor(Math.random() * 6)];
+            
+            // 2. Shuffle names
+            const shuffledPlayers = [...initialPlayers];
+            shuffleArray(shuffledPlayers);
+
+            // 3. Update Firestore
+            try {
+                const updatePromises = shuffledPlayers.map((player, index) => {
+                    const rank = index + 1;
+                    const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
+                    return setDoc(pickDocRef, { winnerName: player }, { merge: true });
+                });
+                await Promise.all(updatePromises);
+                displayMessage("Draft order has been successfully randomized!", false);
             } catch (error) {
-                console.error("Error initializing mock data:", error);
+                console.error("Error updating randomized order:", error);
+                displayMessage("Failed to save the new order. Please check console.", true);
+            } finally {
+                setTimeout(() => {
+                    diceModal.style.display = 'none';
+                    randomizeButton.textContent = "Order Randomized!";
+                }, 1000);
             }
         }
 
-        function renderPicks(picks) {
-            const tbody = document.getElementById('pickOrderBody');
-            tbody.innerHTML = '';
-            currentPicksData = picks.sort((a, b) => a.rank - b.rank);
-            let claimedPlots = [];
-            currentPicksData.forEach(pick => {
-                let statusClass = 'text-gray-500';
-                let rankText = pick.rank + ' Pick';
-                let plotText = pick.chosenPlot;
-                if (pick.rank <= 3) {
-                    rankText = pick.rank === 1 ? '1st Pick' : pick.rank === 2 ? '2nd Pick' : '3rd Pick';
-                }
-                const plotMatch = pick.chosenPlot ? pick.chosenPlot.match(/plot\s*(\d+)/i) : null;
-                if (plotMatch) {
-                    statusClass = 'text-yellow-400';
-                    claimedPlots.push(pick.chosenPlot);
-                } else {
-                    plotText = 'PENDING...';
-                    statusClass = 'text-gray-500';
-                }
-                const row = document.createElement('tr');
-                row.className = `transition duration-150`;
-                row.innerHTML = `
-                    <td class="px-4 py-3 whitespace-nowrap font-semibold ${pick.rank <= 3 ? 'font-extrabold' : ''} ${statusClass}">${rankText}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-lg">${pick.winnerName}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-lg font-mono ${plotText === 'PENDING...' ? 'text-red-400' : 'text-green-400'}">${plotText}</td>
-                `;
-                tbody.appendChild(row);
-            });
-            claimedPlotsContent.innerHTML = claimedPlots
-                .map(plot => `<span class="bg-blue-700 p-1 rounded-md text-sm">${plot.replace(/plot\s*/i, 'P')}</span>`)
-                .join('');
-            claimedPlotsList.classList.toggle('hidden', claimedPlots.length === 0);
-            loadingStatus.classList.add('hidden');
-            displayMessage("Database Connected. Ready for Draft!", false);
-        }
-
+        // --- EVENT LISTENERS & INITIALIZATION ---
         function setupRealtimeListener() {
-            console.log("Listening on path:", PICK_COLLECTION_PATH);
             try {
                 const picksQuery = collection(db, PICK_COLLECTION_PATH);
                 onSnapshot(picksQuery, (snapshot) => {
                     const picks = snapshot.docs.map(doc => doc.data());
-                    if (picks.length < initialPicks.length) {
-                        initializePicksIfEmpty();
-                    }
-                    renderPicks(picks);
+                    if (picks.length < initialPlayers.length) initializePicksIfEmpty();
+                    renderTables(picks);
                 }, (error) => {
-                    console.error("Error setting up real-time listener:", error);
                     displayMessage("Error listening for live updates. Check Firestore rules.", true);
                 });
-            } catch (error) {
-                console.error("Failed to query collection:", error);
-                displayMessage("Failed to connect to the database collection. Check path and Firestore rules.", true);
-            }
+            } catch (error) { displayMessage("Failed to connect. Check path and Firestore rules.", true); }
         }
 
         function setupFormSubmission() {
-            const form = document.getElementById('pickForm');
-            form.addEventListener('submit', async (e) => {
+            document.getElementById('pickForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const rankInput = document.getElementById('rankInput');
-                const winnerNameInput = document.getElementById('winnerNameInput');
-                const plotInput = document.getElementById('plotInput');
-                const rank = parseInt(rankInput.value);
-                const winnerName = winnerNameInput.value.trim();
-                const chosenPlot = plotInput.value.trim();
-                if (isNaN(rank) || rank < 1) {
-                    displayMessage("Please enter a valid rank number.", true);
-                    return;
-                }
+                const rank = parseInt(document.getElementById('rankInput').value);
+                const winnerName = document.getElementById('winnerNameInput').value.trim();
+                const chosenPlot = document.getElementById('plotInput').value.trim();
+                
+                if (isNaN(rank) || rank < 1) return displayMessage("Please enter a valid rank number.", true);
+
                 const normalizedPlot = chosenPlot.match(/plot\s*(\d+)/i) ? chosenPlot.replace(/plot\s*/i, 'Plot ') : `Plot ${chosenPlot}`;
-                const existingPick = currentPicksData.find(p => 
-                    p.rank !== rank && 
-                    p.chosenPlot && 
-                    p.chosenPlot.toLowerCase() === normalizedPlot.toLowerCase()
-                );
-                if (existingPick) {
-                    displayMessage(`🚫 Plot <b>${normalizedPlot}</b> is already claimed by <b>${existingPick.winnerName}</b> (Rank ${existingPick.rank}).`, true);
-                    return;
-                }
+                const existingPick = currentPicksData.find(p => p.rank !== rank && p.chosenPlot?.toLowerCase() === normalizedPlot.toLowerCase());
+
+                if (existingPick) return displayMessage(`🚫 Plot <b>${normalizedPlot}</b> is already claimed by <b>${existingPick.winnerName}</b>.`, true);
+                
                 loadingStatus.textContent = `Saving Pick ${rank}...`;
                 loadingStatus.classList.remove('hidden');
                 messageBox.classList.add('hidden');
+
                 try {
                     const pickDocRef = doc(db, PICK_COLLECTION_PATH, String(rank));
                     await setDoc(pickDocRef, { rank, winnerName, chosenPlot: normalizedPlot }, { merge: true });
                     displayMessage(`Successfully updated Rank ${rank} for ${winnerName}! Claimed ${normalizedPlot}!`, false);
-                    form.reset();
-                } catch (error) {
-                    console.error("Error saving pick result:", error);
-                    displayMessage(`Failed to save pick. Error: ${error.message}`, true);
-                } finally {
-                    loadingStatus.classList.add('hidden');
-                }
+                    e.target.reset();
+                } catch (error) { displayMessage(`Failed to save pick. Error: ${error.message}`, true); }
+                finally { loadingStatus.classList.add('hidden'); }
             });
         }
         
-        // --- INITIALIZATION ---
-        
-        function initFirebase() {
+        function initApp() {
             loadingStatus.textContent = "Connecting to Database...";
             loadingStatus.classList.remove('hidden');
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
-                console.log("Firebase initialized successfully.");
-                loadingStatus.textContent = "Database Connected. Loading Picks...";
                 setupRealtimeListener();
                 setupFormSubmission();
+                randomizeButton.addEventListener('click', handleRandomizeClick);
             } catch (error) {
-                console.error("Firebase Initialization Failed:", error);
-                displayMessage("Connection failed. Check your Firebase config object in the script.", true);
+                displayMessage("Connection failed. Check your Firebase config object.", true);
                 loadingStatus.classList.add('hidden');
             }
         }
 
-        window.onload = initFirebase;
+        window.onload = initApp;
     </script>
 </body>
 </html>
