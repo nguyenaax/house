@@ -1,4 +1,22 @@
-name: Deploy GitHub Pageson:push:branches:- mainjobs:deploy:environment:name: github-pagesurl: ${{ steps.deployment.outputs.page_url }}runs-on: ubuntu-latestpermissions:contents: readpages: writeid-token: writesteps:
+name: Deploy GitHub Pages
+
+on:
+push:
+branches:
+- main
+
+jobs:
+deploy:
+environment:
+name: github-pages
+url: ${{ steps.deployment.outputs.page_url }}
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pages: write
+id-token: write
+
+steps:
   - name: Checkout repository
     uses: actions/checkout@v4
 
