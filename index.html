@@ -176,12 +176,12 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'guild-draft-board-1'; // Fixed external ID
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             // --- IMPORTANT: REPLACE THESE WITH YOUR OWN FIREBASE PROJECT CONFIGURATION ---
-            apiKey: "YOUR_API_KEY_HERE", 
-            authDomain: "your-project-id.firebaseapp.com", 
-            projectId: "your-project-id-12345", 
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:12345678901:web:abcdef1234567890abcdef"
+            apiKey: "AIzaSyBxl0Y7VvxDBk8BMXIi3j3QE3hRFOvuPrA",
+            authDomain: "tp-house-raffle.firebaseapp.com",
+            projectId: "tp-house-raffle",
+            storageBucket: "tp-house-raffle.firebasestorage.app",
+            messagingSenderId: "886855375377",
+            appId: "1:886855375377:web:c89f6a41fc767b17242fb0",
             // The keys above must be replaced for live functionality!
         };
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -229,7 +229,7 @@
 
         async function initFirebase() {
             // Check if the essential API key placeholder is still present when running externally
-            if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE" && typeof __firebase_config === 'undefined') {
+            if (firebaseConfig.apiKey === "AIzaSyBxl0Y7VvxDBk8BMXIi3j3QE3hRFOvuPrA" && typeof __firebase_config === 'undefined') {
                 displayMessage("🚨 ERROR: The live board requires Firebase setup. Please replace the placeholder API key in the code!", true);
                 loadingStatus.classList.add('hidden');
                 return;
